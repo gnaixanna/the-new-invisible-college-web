@@ -160,6 +160,21 @@
 
 <script>
   /* ===== Simple elegant dataset ===== */
+
+  function layoutNodes() {
+  
+  const visibleNodes = nodes.filter(n => n.visible !== false);
+  const cx = 400;   // 圆心 x
+  const cy = 250;   // 圆心 y
+  const radius = 170;
+
+  visibleNodes.forEach((node, i) => {
+    const angle = 2 * Math.PI * i / visibleNodes.length;
+    node.x = cx + radius * Math.cos(angle);
+    node.y = cy + radius * Math.sin(angle);
+  });
+}
+
   const nodes = [
     { id: "dirac", label: "P. Dirac", note: "Quiet, precise, and devastating.",visible : True },
     { id: "ehrenfest", label: "P. Ehrenfest", note: "Statistical insight with painful honesty.",visible : True },
