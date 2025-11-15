@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The New Invisible College</title>
+  <style>
+    :root {
+      --bg: #050816;
+      --panel-bg: #0b1120;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.15);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.4)
+      );
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      padding: 1rem 1.5rem;
+      gap: 1rem;
+    }
+
+    .sidebar {
+      width: 280px;
+      max-width: 35%;
+      background: var(--panel-bg);
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .tagline {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+    }
+
+    .title {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .description {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .details {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      border-top: 1px dashed var(--border-subtle);
+      padding-top: 0.75rem;
+    }
+
+    .details dt {
+      font-weight: 600;
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .details dd {
+      margin-left: 0;
+      font-size: 0.9rem;
+    }
+
+    .diagram-container {
+      flex: 1;
+      background: radial-gradient(circle at center, #020617 0, #020617 40%, #000 100%);
+      border-radius: 1rem;
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hint {
+      position: absolute;
+      bottom: 0.75rem;
+      right: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.8);
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .node-label {
+      pointer-events: none;
+      font-size: 0.75rem;
+      fill: var(--text-main);
+    }
+
+    @media (max-width: 900px) {
+      main {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        max-width: none;
+        order: 2;
+      }
+
+      .diagram-container {
+        order: 1;
+        height: 55vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">The New Invisible College</div>
+  </header>
+
+  <main>
+    <!-- 左边说明面板 -->
+    <section class="sidebar">
+      <div class="tagline">Network</div>
+      <h1 class="title">Interactive diagram</h1>
+      <p class="description">
+        Click a node in the diagram to see who it is and how they connect.
+        This is just a tiny demo network; later you can replace the data
+        with your own scientists, letters, or anything else.
+      </p>
+
+      <dl class="details" id="node-details">
+        <dt>Selected</dt>
+        <dd>None</dd>
+        <dt>Notes</dt>
+        <dd>Hover or tap on a node.</dd>
+      </dl>
+    </section>
+
+    <!-- 右边网络图 -->
+    <section class="diagram-container">
+      <svg id="network" viewBox="0 0 800 500"></svg>
+      <div class="hint">Drag to pan · Scroll to zoom · Click nodes</div>
+    </section>
+  </main>
+
+  <script>
+    // ==== 数据：这里以后可以换成你自己的角色 ====
+    const nodes = [
+      { id: 'dirac', label: 'Paul Dirac', x: 220, y: 260, group: 'Physics', note: 'Quantum theory, quiet disaster.' },
+      { id: 'ehrenfest', label: 'Paul Ehrenfest', x: 360, y: 160, group: 'Physics', note: 'Stat mech and emotional support.' },
+      { id: 'wigner', label: 'Eugene Wigner', x: 520, y: 260, group: 'Physics', note: 'Symmetries and foundations.' },
+      { id: 'you', label: 'You', x: 360, y: 360, group: 'Observer', note: 'New member of the network.' }
+    ];
+
+    const links = [
+      { source: 'dirac', target: 'ehrenfest' },
+      { source: 'dirac', target: 'wigner' },
+      { source: 'ehrenfest', target: 'wigner' },
+      { source: 'dirac', target: 'you' },
+      { source: 'ehrenfest', target: 'you' },
+      { source: 'wigner', target: 'you' }
+    ];
+
+    // ==== 画 SVG 网络图 ====
+    const svg = document.getElementById('network');
+    const ns = 'http://www.w3.org/2000/svg';
+
+    let zoom = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    let isPanning = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    const viewport = document.createElementNS(ns, 'g');
+    svg.appendChild(viewport);
+
+    function applyTransform() {
+      viewport.setAttribute('transform', `translate(${offsetX}, ${offsetY}) scale(${zoom})`);
+    }
+
+    function getNodeById(id) {
+      return nodes.find(n => n.id === id);
+    }
+
+    const nodeRadius = 14;
+
+    // 画连线
+    links.forEach(link => {
+      const source = getNodeById(link.source);
+      const target = getNodeById(link.target);
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', source.x);
+      line.setAttribute('y1', source.y);
+      line.setAttribute('x2', target.x);
+      line.setAttribute('y2', target.y);
+      line.setAttribute('stroke', 'rgba(148,163,184,0.6)');
+      line.setAttribute('stroke-width', '1.4');
+      viewport.appendChild(line);
+    });
+
+    // 画节点
+    nodes.forEach(node => {
+      const group = document.createElementNS(ns, 'g');
+      group.setAttribute('data-id', node.id);
+
+      const halo = document.createElementNS(ns, 'circle');
+      halo.setAttribute('cx', node.x);
+      halo.setAttribute('cy', node.y);
+      halo.setAttribute('r', nodeRadius + 4);
+      halo.setAttribute('fill', 'rgba(56,189,248,0.10)');
+      halo.style.opacity = 0;
+      halo.style.transition = 'opacity 120ms ease-out';
+      group.appendChild(halo);
+
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('cx', node.x);
+      circle.setAttribute('cy', node.y);
+      circle.setAttribute('r', nodeRadius);
+      circle.setAttribute('fill', '#020617');
+      circle.setAttribute('stroke', '#38bdf8');
+      circle.setAttribute('stroke-width', '2');
+      circle.style.cursor = 'pointer';
+      group.appendChild(circle);
+
+      const label = document.createElementNS(ns, 'text');
+      label.setAttribute('x', node.x);
+      label.setAttribute('y', node.y - nodeRadius - 8);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('class', 'node-label');
+      label.textContent = node.label;
+      group.appendChild(label);
+
+      group.addEventListener('mouseenter', () => {
+        halo.style.opacity = 1;
+      });
+
+      group.addEventListener('mouseleave', () => {
+        if (!group.classList.contains('selected')) {
+          halo.style.opacity = 0;
+        }
+      });
+
+      group.addEventListener('click', () => selectNode(node.id));
+
+      viewport.appendChild(group);
+    });
+
+    const detailsEl = document.getElementById('node-details');
+
+    function selectNode(id) {
+      // 清除之前选中状态
+      document.querySelectorAll('#network g[data-id]').forEach(g => {
+        g.classList.remove('selected');
+        const halo = g.querySelector('circle:first-child');
+        if (halo) halo.style.opacity = 0;
+      });
+
+      const group = document.querySelector(`#network g[data-id="${id}"]`);
+      if (group) {
+        group.classList.add('selected');
+        const halo = group.querySelector('circle:first-child');
+        if (halo) halo.style.opacity = 1;
+      }
+
+      const node = getNodeById(id);
+      if (!node) return;
+
+      detailsEl.innerHTML = `
+        <dt>Selected</dt>
+        <dd>${node.label}</dd>
+        <dt>Field</dt>
+        <dd>${node.group}</dd>
+        <dt>Notes</dt>
+        <dd>${node.note}</dd>
+      `;
+    }
+
+    // ==== 拖动平移 ====
+    svg.addEventListener('mousedown', (e) => {
+      // 点在节点上就不触发拖动
+      if (e.target.closest('g[data-id]')) return;
+      isPanning = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      svg.style.cursor = 'grab';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      offsetX += dx;
+      offsetY += dy;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isPanning = false;
+      svg.style.cursor = 'default';
+    });
+
+    // ==== 滚轮缩放 ====
+    svg.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 0.9 : 1.1;
+      const prevZoom = zoom;
+      zoom = Math.min(Math.max(zoom * factor, 0.6), 2.5);
+
+      const rect = svg.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+
+      // 以鼠标位置为中心缩放
+      offsetX = cx - (cx - offsetX) * (zoom / prevZoom);
+      offsetY = cy - (cy - offsetY) * (zoom / prevZoom);
+
+      applyTransform();
+    }, { passive: false });
+
+    applyTransform();
+  </script>
+</body>
+</html>
