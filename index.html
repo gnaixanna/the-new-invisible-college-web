@@ -161,41 +161,41 @@
 <script>
   /* ===== Simple elegant dataset ===== */
 
-  function layoutNodes() {
-  
-  const visibleNodes = nodes.filter(n => n.visible !== false);
-  const cx = 400;   // 圆心 x
-  const cy = 250;   // 圆心 y
-  const radius = 170;
-
-  visibleNodes.forEach((node, i) => {
-    const angle = 2 * Math.PI * i / visibleNodes.length;
-    node.x = cx + radius * Math.cos(angle);
-    node.y = cy + radius * Math.sin(angle);
-  });
-}
-
   const nodes = [
-    { id: "dirac", label: "P. Dirac", note: "Quiet, precise, and devastating.",visible : True },
-    { id: "ehrenfest", label: "P. Ehrenfest", note: "Statistical insight with painful honesty.",visible : True },
-    { id: "wigner", label: "E. Wigner",  note: "Symmetry as a worldview.",visible : True },
-    { id: "heisenberg", label: "W. Heisenberg", note: "N/A" ,visible : True}，
-    { id: "bohr", label: "N. Bohr", note: "N/A" ,visible : True}，
-    { id: "oppenheimer", label: "J. R. Oppenherimer", note: "N/A",visible : True }，
-    { id: "gamow", label: "G. Gamow",  note: "N/A" ,visible : True}，
-    { id: "landau", label: "L. Landau", note: "N/A",visible : True }，
+    { id: "dirac",       label: "P. Dirac",       note: "Quiet, precise, and devastating.",            visible: true },
+    { id: "ehrenfest",   label: "P. Ehrenfest",   note: "Statistical insight with painful honesty.",  visible: true },
+    { id: "wigner",      label: "E. Wigner",      note: "Symmetry as a worldview.",                   visible: true },
+    { id: "heisenberg",  label: "W. Heisenberg",  note: "N/A",                                        visible: true },
+    { id: "bohr",        label: "N. Bohr",        note: "N/A",                                        visible: true },
+    { id: "oppenheimer", label: "J. R. Oppenheimer", note: "N/A",                                     visible: true },
+    { id: "gamow",       label: "G. Gamow",       note: "N/A",                                        visible: true },
+    { id: "landau",      label: "L. Landau",      note: "N/A",                                        visible: true }
   ];
 
   const links = [
     { source: "dirac", target: "ehrenfest" },
     { source: "dirac", target: "wigner" },
     { source: "dirac", target: "heisenberg" },
-    
+    { source: "bohr",  target: "heisenberg" }
   ];
+
+  // 布局：把所有 visible 节点排成一个圆
+  function layoutNodes() {
+    const visibleNodes = nodes.filter(n => n.visible !== false);
+    const cx = 400;
+    const cy = 250;
+    const radius = 170;
+
+    visibleNodes.forEach((node, i) => {
+      const angle = 2 * Math.PI * i / visibleNodes.length;
+      node.x = cx + radius * Math.cos(angle);
+      node.y = cy + radius * Math.sin(angle);
+    });
+  }
 
   /* ===== SVG building ===== */
   const svg = document.getElementById("network");
-  const ns = "http://www.w3.org/2000/svg";
+  const ns  = "http://www.w3.org/2000/svg";
 
   const viewport = document.createElementNS(ns, "g");
   svg.appendChild(viewport);
@@ -207,14 +207,21 @@
     viewport.setAttribute("transform", `translate(${offsetX}, ${offsetY}) scale(${zoom})`);
   }
 
-  function getNode(id) { return nodes.find(n => n.id === id); }
+  function getNode(id) {
+    return nodes.find(n => n.id === id);
+  }
 
   const nodeRadius = 12;
+
+  // 先计算一次坐标
+  layoutNodes();
 
   /* Draw links */
   links.forEach(link => {
     const s = getNode(link.source);
     const t = getNode(link.target);
+    if (!s || !t) return; // 防止写错 id 直接崩
+
     const line = document.createElementNS(ns, "line");
     line.setAttribute("x1", s.x);
     line.setAttribute("y1", s.y);
@@ -227,6 +234,8 @@
 
   /* Draw nodes */
   nodes.forEach(node => {
+    if (node.visible === false) return;
+
     const g = document.createElementNS(ns, "g");
     g.setAttribute("data-id", node.id);
 
@@ -255,6 +264,7 @@
 
   function selectNode(id) {
     const node = getNode(id);
+    if (!node) return;
 
     detailsEl.innerHTML = `
       <dt>Selected</dt><dd>${node.label}</dd>
@@ -266,18 +276,22 @@
   svg.addEventListener("mousedown", e => {
     if (e.target.closest("g[data-id]")) return;
     isPanning = true;
-    lastX = e.clientX; lastY = e.clientY;
+    lastX = e.clientX;
+    lastY = e.clientY;
   });
 
   window.addEventListener("mousemove", e => {
     if (!isPanning) return;
     offsetX += (e.clientX - lastX);
     offsetY += (e.clientY - lastY);
-    lastX = e.clientX; lastY = e.clientY;
+    lastX = e.clientX;
+    lastY = e.clientY;
     applyTransform();
   });
 
-  window.addEventListener("mouseup", () => { isPanning = false; });
+  window.addEventListener("mouseup", () => {
+    isPanning = false;
+  });
 
   /* Zoom */
   svg.addEventListener("wheel", e => {
@@ -297,8 +311,8 @@
   }, { passive: false });
 
   applyTransform();
-
 </script>
+
 
 </body>
 </html>
