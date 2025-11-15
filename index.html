@@ -6,13 +6,12 @@
 <title>The New Invisible College</title>
 
 <style>
-  /* ======= COLOR PALETTE: 19th century scientific paper ======= */
   :root {
     --paper-bg: #faf8f2;
     --paper-border: #d4cfc3;
     --ink: #3a3a3a;
     --ink-soft: #615c54;
-    --accent: #8c6b45; /* like old ink turning brown */
+    --accent: #8c6b45; 
   }
 
   body {
@@ -162,19 +161,21 @@
 <script>
   /* ===== Simple elegant dataset ===== */
   const nodes = [
-    { id: "dirac", label: "P. Dirac", x: 220, y: 260, note: "Quiet, precise, and devastating." },
-    { id: "ehrenfest", label: "P. Ehrenfest", x: 360, y: 160, note: "Statistical insight with painful honesty." },
-    { id: "wigner", label: "E. Wigner", x: 520, y: 260, note: "Symmetry as a worldview." },
-    { id: "observer", label: "The Observer", x: 360, y: 360, note: "A new mind entering the circle." }
+    { id: "dirac", label: "P. Dirac", note: "Quiet, precise, and devastating.",visible : True },
+    { id: "ehrenfest", label: "P. Ehrenfest", note: "Statistical insight with painful honesty.",visible : True },
+    { id: "wigner", label: "E. Wigner",  note: "Symmetry as a worldview.",visible : True },
+    { id: "heisenberg", label: "W. Heisenberg", note: "N/A" ,visible : True}，
+    { id: "bohr", label: "N. Bohr", note: "N/A" ,visible : True}，
+    { id: "oppenheimer", label: "J. R. Oppenherimer", note: "N/A",visible : True }，
+    { id: "gamow", label: "G. Gamow",  note: "N/A" ,visible : True}，
+    { id: "landau", label: "L. Landau", note: "N/A",visible : True }，
   ];
 
   const links = [
     { source: "dirac", target: "ehrenfest" },
     { source: "dirac", target: "wigner" },
-    { source: "ehrenfest", target: "wigner" },
-    { source: "observer", target: "dirac" },
-    { source: "observer", target: "ehrenfest" },
-    { source: "observer", target: "wigner" }
+    { source: "dirac", target: "heisenberg" },
+    
   ];
 
   /* ===== SVG building ===== */
