@@ -1,378 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The New Invisible College</title>
-  <style>
-    :root {
-      --bg: #050816;
-      --panel-bg: #0b1120;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56,189,248,0.15);
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border-subtle: #1f2937;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The New Invisible College</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+  /* ======= COLOR PALETTE: 19th century scientific paper ======= */
+  :root {
+    --paper-bg: #faf8f2;
+    --paper-border: #d4cfc3;
+    --ink: #3a3a3a;
+    --ink-soft: #615c54;
+    --accent: #8c6b45; /* like old ink turning brown */
+  }
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Libre Baskerville", "Times New Roman", serif;
+    background: var(--paper-bg);
+    color: var(--ink);
+    line-height: 1.7;
+    padding-bottom: 3rem;
+  }
 
-    header {
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(8px);
-      background: linear-gradient(
-        to bottom,
-        rgba(15, 23, 42, 0.9),
-        rgba(15, 23, 42, 0.4)
-      );
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+  header {
+    text-align: center;
+    padding: 2.3rem 0 1.3rem 0;
+    border-bottom: 1px solid var(--paper-border);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.04em;
+  }
 
-    .logo {
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
+  .title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
 
-    main {
-      flex: 1;
-      display: flex;
-      padding: 1rem 1.5rem;
-      gap: 1rem;
-    }
+  .subtitle {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    margin-top: 0.5rem;
+  }
 
-    .sidebar {
-      width: 280px;
-      max-width: 35%;
-      background: var(--panel-bg);
-      border-radius: 1rem;
-      padding: 1rem 1.2rem;
-      border: 1px solid var(--border-subtle);
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
+  /* ======= Layout ======= */
+  .container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    gap: 2rem;
+  }
 
-    .tagline {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--accent);
-    }
+  .sidebar {
+    width: 280px;
+    border: 1px solid var(--paper-border);
+    background: #fdfbf6;
+    padding: 1.4rem;
+    border-radius: 6px;
+  }
 
-    .title {
-      font-size: 1.3rem;
-      font-weight: 600;
-    }
+  .sidebar h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
 
-    .description {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
+  .desc {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
 
-    .details {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      border-top: 1px dashed var(--border-subtle);
-      padding-top: 0.75rem;
-    }
+  dl {
+    margin-top: 1rem;
+    font-size: 0.92rem;
+  }
 
-    .details dt {
-      font-weight: 600;
-      margin-top: 0.4rem;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-    }
+  dt {
+    font-weight: 600;
+    margin-top: 0.8rem;
+    color: var(--accent);
+  }
 
-    .details dd {
-      margin-left: 0;
-      font-size: 0.9rem;
-    }
+  dd {
+    margin-left: 0;
+  }
 
-    .diagram-container {
-      flex: 1;
-      background: radial-gradient(circle at center, #020617 0, #020617 40%, #000 100%);
-      border-radius: 1rem;
-      border: 1px solid var(--border-subtle);
-      position: relative;
-      overflow: hidden;
-    }
+  /* ===== Diagram area ===== */
+  .diagram-container {
+    flex: 1;
+    border: 1px solid var(--paper-border);
+    background: #ffffff;
+    border-radius: 6px;
+    overflow: hidden;
+    height: 550px;
+    position: relative;
+  }
 
-    svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 
-    .hint {
-      position: absolute;
-      bottom: 0.75rem;
-      right: 1rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      background: rgba(15, 23, 42, 0.8);
-      padding: 0.35rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-    }
+  .hint {
+    position: absolute;
+    bottom: 0.6rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    background: rgba(253, 250, 240, 0.9);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--paper-border);
+    border-radius: 4px;
+  }
 
-    .node-label {
-      pointer-events: none;
-      font-size: 0.75rem;
-      fill: var(--text-main);
-    }
+  .node-label {
+    font-size: 0.75rem;
+    fill: var(--ink);
+    pointer-events: none;
+  }
 
-    @media (max-width: 900px) {
-      main {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        max-width: none;
-        order: 2;
-      }
-
-      .diagram-container {
-        order: 1;
-        height: 55vh;
-      }
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <header>
-    <div class="logo">The New Invisible College</div>
-  </header>
 
-  <main>
-    <!-- 左边说明面板 -->
-    <section class="sidebar">
-      <div class="tagline">Network</div>
-      <h1 class="title">Interactive diagram</h1>
-      <p class="description">
-        Click a node in the diagram to see who it is and how they connect.
-        This is just a tiny demo network; later you can replace the data
-        with your own scientists, letters, or anything else.
-      </p>
+<header>
+  <div class="title">The New Invisible College</div>
+  <div class="subtitle">A gentle diagram in the spirit of 19th-century scholarly papers</div>
+</header>
 
-      <dl class="details" id="node-details">
-        <dt>Selected</dt>
-        <dd>None</dd>
-        <dt>Notes</dt>
-        <dd>Hover or tap on a node.</dd>
-      </dl>
-    </section>
+<div class="container">
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Notes</h2>
+    <p class="desc">
+      Select a node in the diagram to read a short annotation.
+    </p>
 
-    <!-- 右边网络图 -->
-    <section class="diagram-container">
-      <svg id="network" viewBox="0 0 800 500"></svg>
-      <div class="hint">Drag to pan · Scroll to zoom · Click nodes</div>
-    </section>
-  </main>
+    <dl id="node-details">
+      <dt>Selected</dt>
+      <dd>None</dd>
 
-  <script>
-    // ==== 数据：这里以后可以换成你自己的角色 ====
-    const nodes = [
-      { id: 'dirac', label: 'Paul Dirac', x: 220, y: 260, group: 'Physics', note: 'Quantum theory, quiet disaster.' },
-      { id: 'ehrenfest', label: 'Paul Ehrenfest', x: 360, y: 160, group: 'Physics', note: 'Stat mech and emotional support.' },
-      { id: 'wigner', label: 'Eugene Wigner', x: 520, y: 260, group: 'Physics', note: 'Symmetries and foundations.' },
-      { id: 'you', label: 'You', x: 360, y: 360, group: 'Observer', note: 'New member of the network.' }
-    ];
+      <dt>Notes</dt>
+      <dd>Hover or tap a node in the diagram.</dd>
+    </dl>
+  </aside>
 
-    const links = [
-      { source: 'dirac', target: 'ehrenfest' },
-      { source: 'dirac', target: 'wigner' },
-      { source: 'ehrenfest', target: 'wigner' },
-      { source: 'dirac', target: 'you' },
-      { source: 'ehrenfest', target: 'you' },
-      { source: 'wigner', target: 'you' }
-    ];
+  <!-- Diagram panel -->
+  <section class="diagram-container">
+    <svg id="network" viewBox="0 0 800 500"></svg>
+    <div class="hint">Drag to pan · Scroll to zoom · Click nodes</div>
+  </section>
 
-    // ==== 画 SVG 网络图 ====
-    const svg = document.getElementById('network');
-    const ns = 'http://www.w3.org/2000/svg';
+</div>
 
-    let zoom = 1;
-    let offsetX = 0;
-    let offsetY = 0;
-    let isPanning = false;
-    let lastX = 0;
-    let lastY = 0;
 
-    const viewport = document.createElementNS(ns, 'g');
-    svg.appendChild(viewport);
+<script>
+  /* ===== Simple elegant dataset ===== */
+  const nodes = [
+    { id: "dirac", label: "P. Dirac", x: 220, y: 260, note: "Quiet, precise, and devastating." },
+    { id: "ehrenfest", label: "P. Ehrenfest", x: 360, y: 160, note: "Statistical insight with painful honesty." },
+    { id: "wigner", label: "E. Wigner", x: 520, y: 260, note: "Symmetry as a worldview." },
+    { id: "observer", label: "The Observer", x: 360, y: 360, note: "A new mind entering the circle." }
+  ];
 
-    function applyTransform() {
-      viewport.setAttribute('transform', `translate(${offsetX}, ${offsetY}) scale(${zoom})`);
-    }
+  const links = [
+    { source: "dirac", target: "ehrenfest" },
+    { source: "dirac", target: "wigner" },
+    { source: "ehrenfest", target: "wigner" },
+    { source: "observer", target: "dirac" },
+    { source: "observer", target: "ehrenfest" },
+    { source: "observer", target: "wigner" }
+  ];
 
-    function getNodeById(id) {
-      return nodes.find(n => n.id === id);
-    }
+  /* ===== SVG building ===== */
+  const svg = document.getElementById("network");
+  const ns = "http://www.w3.org/2000/svg";
 
-    const nodeRadius = 14;
+  const viewport = document.createElementNS(ns, "g");
+  svg.appendChild(viewport);
 
-    // 画连线
-    links.forEach(link => {
-      const source = getNodeById(link.source);
-      const target = getNodeById(link.target);
-      const line = document.createElementNS(ns, 'line');
-      line.setAttribute('x1', source.x);
-      line.setAttribute('y1', source.y);
-      line.setAttribute('x2', target.x);
-      line.setAttribute('y2', target.y);
-      line.setAttribute('stroke', 'rgba(148,163,184,0.6)');
-      line.setAttribute('stroke-width', '1.4');
-      viewport.appendChild(line);
-    });
+  let zoom = 1, offsetX = 0, offsetY = 0;
+  let isPanning = false, lastX = 0, lastY = 0;
 
-    // 画节点
-    nodes.forEach(node => {
-      const group = document.createElementNS(ns, 'g');
-      group.setAttribute('data-id', node.id);
+  function applyTransform() {
+    viewport.setAttribute("transform", `translate(${offsetX}, ${offsetY}) scale(${zoom})`);
+  }
 
-      const halo = document.createElementNS(ns, 'circle');
-      halo.setAttribute('cx', node.x);
-      halo.setAttribute('cy', node.y);
-      halo.setAttribute('r', nodeRadius + 4);
-      halo.setAttribute('fill', 'rgba(56,189,248,0.10)');
-      halo.style.opacity = 0;
-      halo.style.transition = 'opacity 120ms ease-out';
-      group.appendChild(halo);
+  function getNode(id) { return nodes.find(n => n.id === id); }
 
-      const circle = document.createElementNS(ns, 'circle');
-      circle.setAttribute('cx', node.x);
-      circle.setAttribute('cy', node.y);
-      circle.setAttribute('r', nodeRadius);
-      circle.setAttribute('fill', '#020617');
-      circle.setAttribute('stroke', '#38bdf8');
-      circle.setAttribute('stroke-width', '2');
-      circle.style.cursor = 'pointer';
-      group.appendChild(circle);
+  const nodeRadius = 12;
 
-      const label = document.createElementNS(ns, 'text');
-      label.setAttribute('x', node.x);
-      label.setAttribute('y', node.y - nodeRadius - 8);
-      label.setAttribute('text-anchor', 'middle');
-      label.setAttribute('class', 'node-label');
-      label.textContent = node.label;
-      group.appendChild(label);
+  /* Draw links */
+  links.forEach(link => {
+    const s = getNode(link.source);
+    const t = getNode(link.target);
+    const line = document.createElementNS(ns, "line");
+    line.setAttribute("x1", s.x);
+    line.setAttribute("y1", s.y);
+    line.setAttribute("x2", t.x);
+    line.setAttribute("y2", t.y);
+    line.setAttribute("stroke", "#b6ac99");
+    line.setAttribute("stroke-width", "1.2");
+    viewport.appendChild(line);
+  });
 
-      group.addEventListener('mouseenter', () => {
-        halo.style.opacity = 1;
-      });
+  /* Draw nodes */
+  nodes.forEach(node => {
+    const g = document.createElementNS(ns, "g");
+    g.setAttribute("data-id", node.id);
 
-      group.addEventListener('mouseleave', () => {
-        if (!group.classList.contains('selected')) {
-          halo.style.opacity = 0;
-        }
-      });
+    const circle = document.createElementNS(ns, "circle");
+    circle.setAttribute("cx", node.x);
+    circle.setAttribute("cy", node.y);
+    circle.setAttribute("r", nodeRadius);
+    circle.setAttribute("fill", "#ffffff");
+    circle.setAttribute("stroke", "#8c6b45");
+    circle.setAttribute("stroke-width", "1.5");
+    g.appendChild(circle);
 
-      group.addEventListener('click', () => selectNode(node.id));
+    const label = document.createElementNS(ns, "text");
+    label.setAttribute("x", node.x);
+    label.setAttribute("y", node.y - nodeRadius - 8);
+    label.setAttribute("text-anchor", "middle");
+    label.setAttribute("class", "node-label");
+    label.textContent = node.label;
+    g.appendChild(label);
 
-      viewport.appendChild(group);
-    });
+    g.addEventListener("click", () => selectNode(node.id));
+    viewport.appendChild(g);
+  });
 
-    const detailsEl = document.getElementById('node-details');
+  const detailsEl = document.getElementById("node-details");
 
-    function selectNode(id) {
-      // 清除之前选中状态
-      document.querySelectorAll('#network g[data-id]').forEach(g => {
-        g.classList.remove('selected');
-        const halo = g.querySelector('circle:first-child');
-        if (halo) halo.style.opacity = 0;
-      });
+  function selectNode(id) {
+    const node = getNode(id);
 
-      const group = document.querySelector(`#network g[data-id="${id}"]`);
-      if (group) {
-        group.classList.add('selected');
-        const halo = group.querySelector('circle:first-child');
-        if (halo) halo.style.opacity = 1;
-      }
+    detailsEl.innerHTML = `
+      <dt>Selected</dt><dd>${node.label}</dd>
+      <dt>Notes</dt><dd>${node.note}</dd>
+    `;
+  }
 
-      const node = getNodeById(id);
-      if (!node) return;
+  /* Pan */
+  svg.addEventListener("mousedown", e => {
+    if (e.target.closest("g[data-id]")) return;
+    isPanning = true;
+    lastX = e.clientX; lastY = e.clientY;
+  });
 
-      detailsEl.innerHTML = `
-        <dt>Selected</dt>
-        <dd>${node.label}</dd>
-        <dt>Field</dt>
-        <dd>${node.group}</dd>
-        <dt>Notes</dt>
-        <dd>${node.note}</dd>
-      `;
-    }
+  window.addEventListener("mousemove", e => {
+    if (!isPanning) return;
+    offsetX += (e.clientX - lastX);
+    offsetY += (e.clientY - lastY);
+    lastX = e.clientX; lastY = e.clientY;
+    applyTransform();
+  });
 
-    // ==== 拖动平移 ====
-    svg.addEventListener('mousedown', (e) => {
-      // 点在节点上就不触发拖动
-      if (e.target.closest('g[data-id]')) return;
-      isPanning = true;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      svg.style.cursor = 'grab';
-    });
+  window.addEventListener("mouseup", () => { isPanning = false; });
 
-    window.addEventListener('mousemove', (e) => {
-      if (!isPanning) return;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      offsetX += dx;
-      offsetY += dy;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      applyTransform();
-    });
+  /* Zoom */
+  svg.addEventListener("wheel", e => {
+    e.preventDefault();
+    const factor = e.deltaY > 0 ? 0.9 : 1.1;
+    const oldZoom = zoom;
+    zoom = Math.min(Math.max(zoom * factor, 0.5), 2.5);
 
-    window.addEventListener('mouseup', () => {
-      isPanning = false;
-      svg.style.cursor = 'default';
-    });
+    const rect = svg.getBoundingClientRect();
+    const cx = e.clientX - rect.left;
+    const cy = e.clientY - rect.top;
 
-    // ==== 滚轮缩放 ====
-    svg.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const factor = e.deltaY > 0 ? 0.9 : 1.1;
-      const prevZoom = zoom;
-      zoom = Math.min(Math.max(zoom * factor, 0.6), 2.5);
-
-      const rect = svg.getBoundingClientRect();
-      const cx = e.clientX - rect.left;
-      const cy = e.clientY - rect.top;
-
-      // 以鼠标位置为中心缩放
-      offsetX = cx - (cx - offsetX) * (zoom / prevZoom);
-      offsetY = cy - (cy - offsetY) * (zoom / prevZoom);
-
-      applyTransform();
-    }, { passive: false });
+    offsetX = cx - (cx - offsetX) * (zoom / oldZoom);
+    offsetY = cy - (cy - offsetY) * (zoom / oldZoom);
 
     applyTransform();
-  </script>
+  }, { passive: false });
+
+  applyTransform();
+
+</script>
+
 </body>
 </html>
