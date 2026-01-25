@@ -189,17 +189,23 @@ nodes.forEach((node, i) => {
     node.y = gCfg.y + Math.floor(i / 3) * 100;
 });
 
-// 渲染连线
+// 渲染连线 (增加了容错判断)
 links.forEach(link => {
     const s = nodes.find(n => n.id === link.from);
     const t = nodes.find(n => n.id === link.to);
+    
+    // 如果 ID 拼错了，跳过这一条线，而不是让整个程序崩溃
+    if (!s || !t) {
+        console.warn(`Link Error: Could not find node ${!s ? link.from : link.to}`);
+        return; 
+    }
+
     const lEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
     lEl.setAttribute("class", `link l-${link.from} l-${link.to}`);
     lEl.setAttribute("x1", s.x); lEl.setAttribute("y1", s.y);
     lEl.setAttribute("x2", t.x); lEl.setAttribute("y2", t.y);
     mainGroup.appendChild(lEl);
 });
-
 // 渲染节点
 nodes.forEach(node => {
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
