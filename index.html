@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The New Invisible College</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <style>
   :root {
@@ -15,320 +17,166 @@
   }
 
   body {
-    margin: 0;
-    padding: 0;
-    font-family: "Libre Baskerville", "Times New Roman", serif;
-    background: var(--paper-bg);
-    color: var(--ink);
-    line-height: 1.7;
-    padding-bottom: 3rem;
+    margin: 0; padding: 0;
+    font-family: "Libre Baskerville", serif;
+    background: var(--paper-bg); color: var(--ink);
+    line-height: 1.6;
   }
 
   header {
-    text-align: center;
-    padding: 2.3rem 0 1.3rem 0;
+    text-align: center; padding: 2rem 0;
     border-bottom: 1px solid var(--paper-border);
-    margin-bottom: 1.5rem;
-    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
   }
 
-  .title {
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--ink);
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-    color: var(--ink-soft);
-    margin-top: 0.5rem;
-  }
-
-  /* ======= Layout ======= */
   .container {
-    width: 90%;
-    max-width: 1100px;
-    margin: auto;
-    display: flex;
-    gap: 2rem;
+    width: 95%; max-width: 1400px;
+    margin: auto; display: flex; gap: 1.5rem;
   }
 
+  /* Sidebar styling */
   .sidebar {
-    width: 280px;
+    width: 320px; height: 650px;
     border: 1px solid var(--paper-border);
-    background: #fdfbf6;
-    padding: 1.4rem;
-    border-radius: 6px;
+    background: #fdfbf6; padding: 1.5rem;
+    border-radius: 8px; overflow-y: auto;
   }
 
-  .sidebar h2 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: var(--accent);
-  }
+  .sidebar h2 { font-size: 1.2rem; color: var(--accent); border-bottom: 1px solid #eee; }
+  .relation-item { margin-bottom: 1rem; font-size: 0.9rem; border-left: 3px solid var(--accent); padding-left: 0.5rem; }
 
-  .desc {
-    font-size: 0.9rem;
-    color: var(--ink-soft);
-  }
-
-  dl {
-    margin-top: 1rem;
-    font-size: 0.92rem;
-  }
-
-  dt {
-    font-weight: 600;
-    margin-top: 0.8rem;
-    color: var(--accent);
-  }
-
-  dd {
-    margin-left: 0;
-  }
-
-  /* ===== Diagram area ===== */
+  /* Diagram area */
   .diagram-container {
-    flex: 1;
+    flex: 1; height: 650px;
     border: 1px solid var(--paper-border);
-    background: #ffffff;
-    border-radius: 6px;
-    overflow: hidden;
-    height: 550px;
-    position: relative;
+    background: #ffffff; border-radius: 8px;
+    position: relative; overflow: hidden;
   }
 
-  svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .hint {
-    position: absolute;
-    bottom: 0.6rem;
-    right: 1rem;
-    font-size: 0.75rem;
-    color: var(--ink-soft);
-    background: rgba(253, 250, 240, 0.9);
-    padding: 0.2rem 0.5rem;
-    border: 1px solid var(--paper-border);
-    border-radius: 4px;
-  }
-
-  .node-label {
-    font-size: 0.75rem;
-    fill: var(--ink);
-    pointer-events: none;
-  }
-
+  svg { width: 100%; height: 100%; cursor: grab; }
+  .node circle { transition: r 0.3s, fill 0.3s; cursor: pointer; }
+  .node:hover circle { r: 16; fill: #fff5e6; }
+  .link { stroke: #d4cfc3; stroke-opacity: 0.4; transition: stroke 0.3s; }
+  .link.highlight { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2px; }
+  .node-label { font-size: 12px; font-weight: bold; fill: var(--ink); pointer-events: none; }
+  .group-label { font-size: 14px; font-style: italic; fill: var(--ink-soft); opacity: 0.5; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="title">The New Invisible College</div>
-  <div class="subtitle">A DIAGRAM</div>
+  <div style="font-size: 2.2rem; font-weight: 600;">The New Invisible College</div>
+  <div style="color: var(--ink-soft);">A Genealogy of Modern Physics</div>
 </header>
 
 <div class="container">
-  
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <h2>Notes</h2>
-    <p class="desc">
-      Select a node in the diagram to read a short annotation.
-    </p>
-
-    <dl id="node-details">
-      <dt>Selected</dt>
-      <dd>None</dd>
-
-      <dt>Notes</dt>
-      <dd>Hover or tap a node in the diagram.</dd>
-    </dl>
+  <aside class="sidebar" id="sidebar">
+    <div id="default-msg">
+      <h2>Instructions</h2>
+      <p>Click a scientist to explore their academic lineage and connections.</p>
+    </div>
+    <div id="content-area" style="display:none;">
+      <h2 id="selected-name">Name</h2>
+      <p id="selected-bio" style="font-style: italic; margin-bottom: 1.5rem;"></p>
+      <div id="connections-list"></div>
+    </div>
   </aside>
 
-  <!-- Diagram panel -->
   <section class="diagram-container">
-    <svg id="network" viewBox="0 0 800 500"></svg>
-    <div class="hint">Drag to pan · Scroll to zoom · Click nodes</div>
+    <svg id="network"></svg>
   </section>
-
 </div>
 
-
 <script>
-  /* ===== Simple elegant dataset ===== */
+/* 1. DATASET: 你只需要维护这两个数组 */
+const groups = {
+  stat: { label: "Statistical Physics", x: 200, y: 150 },
+  quantum: { label: "Quantum Mechanics", x: 500, y: 350 },
+  nuclear: { label: "Nuclear Physics", x: 800, y: 150 }
+};
 
-  const nodes = [
-    { id: "dirac",       label: "P. Dirac",       note: "Known for Dirac equation and Fermi-Dirac statistics.", visible: true },
-    { id: "ehrenfest",   label: "P. Ehrenfest",   note: "",  visible: true },
-    { id: "wigner",      label: "E. Wigner",      note: "",   visible: true },
-    { id: "heisenberg",  label: "W. Heisenberg",  note: "N/A", visible: true },
-    { id: "bohr",        label: "N. Bohr",        note: "N/A", visible: true },
-    { id: "oppenheimer", label: "J. R. Oppenheimer", note: "N/A",  visible: true },
-    { id: "gamow",       label: "G. Gamow",       note: "N/A",  visible: true },
-    { id: "landau",      label: "L. Landau",      note: "N/A",  visible: true },
-    { id: "meitner",     label: "L. Meitner",     note: "N/A", visible: true },
-    { id: "schrödinger", label: "E. Schrödinger", note: "N/A", visible: true },
-    { id: "fermi", label: "E. Fermi", note: "N/A", visible: true },
-    { id: "pauli", label: "W. Pauli", note: "N/A", visible: true },
-    { id: "teller", label: "E. Teller", note: "N/A", visible: true },
-    { id: "born", label: "M. Born", note: "N/A", visible: true },
-    { id: "hilbert", label: "D. Hilbert", note: "N/A", visible: true },
-    { id: "plank", label: "M. Plank", note: "N/A", visible: true },
-    { id: "ioffe", label: "A. Ioffe", note: "N/A", visible: true },
-    { id: "kapitsa", label: "P. Kapitsa", note: "N/A", visible: true },
-    { id: "hilbert", label: "D. Hilbert", note: "N/A", visible: true },
-    { id: "Neumann", label: "J. von Neumann", note: "N/A", visible: true },
-    { id: "einstein", label: "A. Einstein", note: "N/A", visible: true },
-    { id: "Wu", label: "Chien-Shiung Wu 吴健雄", note: "N/A", visible: true },
-    { id: "Li", label: "Tsung-Dao Li 李政道", note: "N/A", visible: true },
-    { id: "Yang", label: "Yang Chen-Ning 杨振宁", note: "N/A", visible: true },
-  ];
+const nodes = [
+  { id: "boltzmann", label: "Boltzmann", group: "stat", bio: "奠基了统计力学，引入熵的统计定义 $S = k \\ln W$。" },
+  { id: "planck", label: "Planck", group: "quantum", bio: "发现量子常数 $h$。" },
+  { id: "bohr", label: "Bohr", group: "quantum", bio: "哥本哈根学派教父。" },
+  { id: "heisenberg", label: "Heisenberg", group: "quantum", bio: "矩阵力学创立者。" },
+  { id: "meitner", label: "Meitner", group: "nuclear", bio: "发现核裂变的关键证据。" }
+];
 
-  const links = [
-    { source: "dirac", target: "ehrenfest" },
-    { source: "dirac", target: "wigner" },
-    { source: "dirac", target: "heisenberg" },
-    { source: "bohr",  target: "heisenberg" }
-  ];
+const links = [
+  { source: "boltzmann", target: "planck", note: "Planck borrowed Boltzmann's statistical methods to solve blackbody radiation." },
+  { source: "planck", target: "bohr", note: "Bohr quantized electronic orbits using Planck's constant $h$." },
+  { source: "bohr", target: "heisenberg", note: "Heisenberg was Bohr's most influential student in Copenhagen." }
+];
 
-  // 布局：把所有 visible 节点排成一个圆
-  function layoutNodes() {
-    const visibleNodes = nodes.filter(n => n.visible !== false);
-    const cx = 400;
-    const cy = 250;
-    const radius = 170;
+/* 2. ENGINE: 自动渲染逻辑 */
+const svg = document.getElementById("network");
+const viewport = document.createElementNS("http://www.w3.org/2000/svg", "g");
+svg.appendChild(viewport);
 
-    visibleNodes.forEach((node, i) => {
-      const angle = 2 * Math.PI * i / visibleNodes.length;
-      node.x = cx + radius * Math.cos(angle);
-      node.y = cy + radius * Math.sin(angle);
-    });
-  }
+// 计算布局
+nodes.forEach((node, i) => {
+  const g = groups[node.group];
+  node.x = g.x + (i % 3) * 80; 
+  node.y = g.y + Math.floor(i / 3) * 80;
+});
 
-  /* ===== SVG building ===== */
-  const svg = document.getElementById("network");
-  const ns  = "http://www.w3.org/2000/svg";
+// 画线
+links.forEach(link => {
+  const s = nodes.find(n => n.id === link.source);
+  const t = nodes.find(n => n.id === link.target);
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("class", `link link-from-${link.source} link-to-${link.target}`);
+  line.setAttribute("x1", s.x); line.setAttribute("y1", s.y);
+  line.setAttribute("x2", t.x); line.setAttribute("y2", t.y);
+  viewport.appendChild(line);
+});
 
-  const viewport = document.createElementNS(ns, "g");
-  svg.appendChild(viewport);
+// 画点
+nodes.forEach(node => {
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.setAttribute("class", "node");
+  
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", node.x); circle.setAttribute("cy", node.y);
+  circle.setAttribute("r", 12); circle.setAttribute("fill", "white");
+  circle.setAttribute("stroke", "var(--accent)"); circle.setAttribute("stroke-width", "2");
+  
+  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  text.setAttribute("x", node.x); text.setAttribute("y", node.y + 25);
+  text.setAttribute("text-anchor", "middle"); text.setAttribute("class", "node-label");
+  text.textContent = node.label;
 
-  let zoom = 1, offsetX = 0, offsetY = 0;
-  let isPanning = false, lastX = 0, lastY = 0;
+  g.appendChild(circle); g.appendChild(text);
+  g.onclick = () => showDetails(node);
+  viewport.appendChild(g);
+});
 
-  function applyTransform() {
-    viewport.setAttribute("transform", `translate(${offsetX}, ${offsetY}) scale(${zoom})`);
-  }
+// 交互逻辑
+function showDetails(node) {
+  // 高亮线
+  document.querySelectorAll('.link').forEach(l => l.classList.remove('highlight'));
+  document.querySelectorAll(`.link-from-${node.id}, .link-to-${node.id}`).forEach(l => l.classList.add('highlight'));
 
-  function getNode(id) {
-    return nodes.find(n => n.id === id);
-  }
+  // 填充侧边栏
+  document.getElementById('default-msg').style.display = 'none';
+  document.getElementById('content-area').style.display = 'block';
+  document.getElementById('selected-name').textContent = node.label;
+  document.getElementById('selected-bio').innerHTML = node.bio;
 
-  const nodeRadius = 12;
-
-  // 先计算一次坐标
-  layoutNodes();
-
-  /* Draw links */
-  links.forEach(link => {
-    const s = getNode(link.source);
-    const t = getNode(link.target);
-    if (!s || !t) return; // 防止写错 id 直接崩
-
-    const line = document.createElementNS(ns, "line");
-    line.setAttribute("x1", s.x);
-    line.setAttribute("y1", s.y);
-    line.setAttribute("x2", t.x);
-    line.setAttribute("y2", t.y);
-    line.setAttribute("stroke", "#b6ac99");
-    line.setAttribute("stroke-width", "1.2");
-    viewport.appendChild(line);
-  });
-
-  /* Draw nodes */
-  nodes.forEach(node => {
-    if (node.visible === false) return;
-
-    const g = document.createElementNS(ns, "g");
-    g.setAttribute("data-id", node.id);
-
-    const circle = document.createElementNS(ns, "circle");
-    circle.setAttribute("cx", node.x);
-    circle.setAttribute("cy", node.y);
-    circle.setAttribute("r", nodeRadius);
-    circle.setAttribute("fill", "#ffffff");
-    circle.setAttribute("stroke", "#8c6b45");
-    circle.setAttribute("stroke-width", "1.5");
-    g.appendChild(circle);
-
-    const label = document.createElementNS(ns, "text");
-    label.setAttribute("x", node.x);
-    label.setAttribute("y", node.y - nodeRadius - 8);
-    label.setAttribute("text-anchor", "middle");
-    label.setAttribute("class", "node-label");
-    label.textContent = node.label;
-    g.appendChild(label);
-
-    g.addEventListener("click", () => selectNode(node.id));
-    viewport.appendChild(g);
-  });
-
-  const detailsEl = document.getElementById("node-details");
-
-  function selectNode(id) {
-    const node = getNode(id);
-    if (!node) return;
-
-    detailsEl.innerHTML = `
-      <dt>Selected</dt><dd>${node.label}</dd>
-      <dt>Notes</dt><dd>${node.note}</dd>
-    `;
-  }
-
-  /* Pan */
-  svg.addEventListener("mousedown", e => {
-    if (e.target.closest("g[data-id]")) return;
-    isPanning = true;
-    lastX = e.clientX;
-    lastY = e.clientY;
-  });
-
-  window.addEventListener("mousemove", e => {
-    if (!isPanning) return;
-    offsetX += (e.clientX - lastX);
-    offsetY += (e.clientY - lastY);
-    lastX = e.clientX;
-    lastY = e.clientY;
-    applyTransform();
-  });
-
-  window.addEventListener("mouseup", () => {
-    isPanning = false;
-  });
-
-  /* Zoom */
-  svg.addEventListener("wheel", e => {
-    e.preventDefault();
-    const factor = e.deltaY > 0 ? 0.9 : 1.1;
-    const oldZoom = zoom;
-    zoom = Math.min(Math.max(zoom * factor, 0.5), 2.5);
-
-    const rect = svg.getBoundingClientRect();
-    const cx = e.clientX - rect.left;
-    const cy = e.clientY - rect.top;
-
-    offsetX = cx - (cx - offsetX) * (zoom / oldZoom);
-    offsetY = cy - (cy - offsetY) * (zoom / oldZoom);
-
-    applyTransform();
-  }, { passive: false });
-
-  applyTransform();
+  const related = links.filter(l => l.source === node.id || l.target === node.id);
+  const listHtml = related.map(l => {
+    const otherId = l.source === node.id ? l.target : l.source;
+    const otherNode = nodes.find(n => n.id === otherId);
+    return `<div class="relation-item"><strong>With ${otherNode.label}:</strong><br>${l.note}</div>`;
+  }).join('');
+  
+  document.getElementById('connections-list').innerHTML = listHtml;
+  
+  // 重新渲染侧边栏中的数学公式
+  MathJax.typeset();
+}
 </script>
-
-
 </body>
 </html>
