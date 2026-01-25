@@ -1,181 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The New Invisible College</title>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The New Invisible College</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<style>
-  :root {
-    --paper-bg: #faf8f2;
-    --paper-border: #d4cfc3;
-    --ink: #3a3a3a;
-    --ink-soft: #615c54;
-    --accent: #8c6b45; 
-  }
+    <style>
+        :root {
+            --paper-bg: #faf8f2;
+            --paper-border: #d4cfc3;
+            --ink: #3a3a3a;
+            --ink-soft: #615c54;
+            --accent: #8c6b45; 
+        }
 
-  body {
-    margin: 0; padding: 0;
-    font-family: "Libre Baskerville", serif;
-    background: var(--paper-bg); color: var(--ink);
-    line-height: 1.6;
-  }
+        body {
+            margin: 0; padding: 0;
+            font-family: "Libre Baskerville", "Times New Roman", serif;
+            background: var(--paper-bg); color: var(--ink);
+            overflow: hidden; /* 防止页面滚动，交给SVG处理 */
+        }
 
-  header {
-    text-align: center; padding: 2rem 0;
-    border-bottom: 1px solid var(--paper-border);
-    margin-bottom: 1rem;
-  }
+        header {
+            text-align: center; padding: 1.5rem 0;
+            border-bottom: 1px solid var(--paper-border);
+            background: var(--paper-bg);
+            z-index: 10; position: relative;
+        }
 
-  .container {
-    width: 95%; max-width: 1400px;
-    margin: auto; display: flex; gap: 1.5rem;
-  }
+        .container {
+            display: flex; height: calc(100vh - 100px);
+        }
 
-  /* Sidebar styling */
-  .sidebar {
-    width: 320px; height: 650px;
-    border: 1px solid var(--paper-border);
-    background: #fdfbf6; padding: 1.5rem;
-    border-radius: 8px; overflow-y: auto;
-  }
+        /* Sidebar */
+        .sidebar {
+            width: 350px; border-right: 1px solid var(--paper-border);
+            background: #fdfbf6; padding: 20px;
+            overflow-y: auto; z-index: 10;
+        }
 
-  .sidebar h2 { font-size: 1.2rem; color: var(--accent); border-bottom: 1px solid #eee; }
-  .relation-item { margin-bottom: 1rem; font-size: 0.9rem; border-left: 3px solid var(--accent); padding-left: 0.5rem; }
+        .sidebar h2 { font-size: 1.3rem; color: var(--accent); margin-top: 0; }
+        .relation-box { 
+            margin-top: 20px; padding: 12px; 
+            border-left: 3px solid var(--accent); 
+            background: rgba(140, 107, 69, 0.05);
+            font-size: 0.9rem;
+        }
 
-  /* Diagram area */
-  .diagram-container {
-    flex: 1; height: 650px;
-    border: 1px solid var(--paper-border);
-    background: #ffffff; border-radius: 8px;
-    position: relative; overflow: hidden;
-  }
+        /* Diagram Area */
+        .diagram-container {
+            flex: 1; position: relative; cursor: grab;
+            background-color: #ffffff;
+            user-select: none;
+        }
 
-  svg { width: 100%; height: 100%; cursor: grab; }
-  .node circle { transition: r 0.3s, fill 0.3s; cursor: pointer; }
-  .node:hover circle { r: 16; fill: #fff5e6; }
-  .link { stroke: #d4cfc3; stroke-opacity: 0.4; transition: stroke 0.3s; }
-  .link.highlight { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2px; }
-  .node-label { font-size: 12px; font-weight: bold; fill: var(--ink); pointer-events: none; }
-  .group-label { font-size: 14px; font-style: italic; fill: var(--ink-soft); opacity: 0.5; }
-</style>
+        .diagram-container:active { cursor: grabbing; }
+
+        svg { width: 100%; height: 100%; }
+
+        .link { stroke: #d4cfc3; stroke-opacity: 0.5; stroke-width: 1.5; fill: none; transition: 0.3s; }
+        .link.active { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2.5; }
+
+        .node circle { fill: white; stroke: var(--accent); stroke-width: 2; transition: 0.3s; }
+        .node:hover circle { fill: #fff5e6; r: 15; }
+        .node-text { font-size: 11px; fill: var(--ink); pointer-events: none; font-weight: bold; }
+        
+        .group-label { font-size: 14px; fill: var(--paper-border); font-style: italic; pointer-events: none; }
+    </style>
 </head>
-
 <body>
 
 <header>
-  <div style="font-size: 2.2rem; font-weight: 600;">The New Invisible College</div>
-  <div style="color: var(--ink-soft);">A Genealogy of Modern Physics</div>
+    <div style="font-size: 1.8rem; font-weight: 600;">The New Invisible College</div>
+    <div style="font-size: 0.8rem; letter-spacing: 2px; color: var(--ink-soft);">A GENEALOGY OF MODERN PHYSICS</div>
 </header>
 
 <div class="container">
-  <aside class="sidebar" id="sidebar">
-    <div id="default-msg">
-      <h2>Instructions</h2>
-      <p>Click a scientist to explore their academic lineage and connections.</p>
-    </div>
-    <div id="content-area" style="display:none;">
-      <h2 id="selected-name">Name</h2>
-      <p id="selected-bio" style="font-style: italic; margin-bottom: 1.5rem;"></p>
-      <div id="connections-list"></div>
-    </div>
-  </aside>
+    <aside class="sidebar" id="sidebar">
+        <div id="intro">
+            <h2>Notes</h2>
+            <p style="font-size: 0.9rem; color: var(--ink-soft);">Click on a scientist to reveal their connections. Drag the background to pan, scroll to zoom.</p>
+        </div>
+        <div id="details" style="display:none;">
+            <h2 id="s-name">Scientist</h2>
+            <p id="s-bio" style="font-size: 0.95rem; line-height: 1.6;"></p>
+            <hr style="border: 0; border-top: 1px solid var(--paper-border); margin: 20px 0;">
+            <div id="s-links"></div>
+        </div>
+    </aside>
 
-  <section class="diagram-container">
-    <svg id="network"></svg>
-  </section>
+    <main class="diagram-container" id="canvas">
+        <svg id="scene">
+            <g id="main-group"></g>
+        </svg>
+    </main>
 </div>
 
 <script>
-/* 1. DATASET: 你只需要维护这两个数组 */
+/* --- 1. DATA CONFIGURATION (按你的参考图分组) --- */
 const groups = {
-  stat: { label: "Statistical Physics", x: 200, y: 150 },
-  quantum: { label: "Quantum Mechanics", x: 500, y: 350 },
-  nuclear: { label: "Nuclear Physics", x: 800, y: 150 }
+    "stat": { x: 500, y: 100, label: "Statistical Physics" },
+    "rel":  { x: 300, y: 300, label: "Relativity" },
+    "qm":   { x: 600, y: 500, label: "Quantum Mechanics" },
+    "nuc":  { x: 200, y: 600, label: "Nuclear Physics" },
+    "field":{ x: 800, y: 700, label: "Quantum Field Theory" }
 };
 
 const nodes = [
-  { id: "boltzmann", label: "Boltzmann", group: "stat", bio: "奠基了统计力学，引入熵的统计定义 $S = k \\ln W$。" },
-  { id: "planck", label: "Planck", group: "quantum", bio: "发现量子常数 $h$。" },
-  { id: "bohr", label: "Bohr", group: "quantum", bio: "哥本哈根学派教父。" },
-  { id: "heisenberg", label: "Heisenberg", group: "quantum", bio: "矩阵力学创立者。" },
-  { id: "meitner", label: "Meitner", group: "nuclear", bio: "发现核裂变的关键证据。" }
+    { id: "boltzmann", label: "Boltzmann", group: "stat", bio: "奠基了统计力学，引入熵的定义 $S = k \\ln W$。" },
+    { id: "maxwell", label: "Maxwell", group: "stat", bio: "电磁理论与分子速率分布。" },
+    { id: "planck", label: "Planck", group: "stat", bio: "发现能量量子化。" },
+    { id: "einstein", label: "Einstein", group: "rel", bio: "相对论与光电效应。" },
+    { id: "bohr", label: "Bohr", group: "qm", bio: "哥本哈根学派的灵魂。" },
+    { id: "heisenberg", label: "Heisenberg", group: "qm", bio: "不确定性原理。" },
+    { id: "meitner", label: "Meitner", group: "nuc", bio: "核裂变理论解释者。" },
+    { id: "feynman", label: "Feynman", group: "field", bio: "量子电动力学与路径积分。" }
 ];
 
 const links = [
-  { source: "boltzmann", target: "planck", note: "Planck borrowed Boltzmann's statistical methods to solve blackbody radiation." },
-  { source: "planck", target: "bohr", note: "Bohr quantized electronic orbits using Planck's constant $h$." },
-  { source: "bohr", target: "heisenberg", note: "Heisenberg was Bohr's most influential student in Copenhagen." }
+    { from: "boltzmann", to: "planck", note: "Planck used Boltzmann's statistics for blackbody radiation." },
+    { from: "planck", to: "bohr", note: "Bohr's atomic model is based on Planck's $h$." },
+    { from: "einstein", to: "bohr", note: "A lifelong debate on the nature of reality." },
+    { from: "bohr", to: "heisenberg", note: "Heisenberg developed matrix mechanics under Bohr's influence." }
 ];
 
-/* 2. ENGINE: 自动渲染逻辑 */
-const svg = document.getElementById("network");
-const viewport = document.createElementNS("http://www.w3.org/2000/svg", "g");
-svg.appendChild(viewport);
+/* --- 2. LAYOUT ENGINE --- */
+const mainGroup = document.getElementById('main-group');
+const svg = document.getElementById('scene');
 
-// 计算布局
+// 初始化布局坐标
 nodes.forEach((node, i) => {
-  const g = groups[node.group];
-  node.x = g.x + (i % 3) * 80; 
-  node.y = g.y + Math.floor(i / 3) * 80;
+    const gCfg = groups[node.group];
+    node.x = gCfg.x + (i % 3) * 100;
+    node.y = gCfg.y + Math.floor(i / 3) * 100;
 });
 
-// 画线
+// 渲染连线
 links.forEach(link => {
-  const s = nodes.find(n => n.id === link.source);
-  const t = nodes.find(n => n.id === link.target);
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  line.setAttribute("class", `link link-from-${link.source} link-to-${link.target}`);
-  line.setAttribute("x1", s.x); line.setAttribute("y1", s.y);
-  line.setAttribute("x2", t.x); line.setAttribute("y2", t.y);
-  viewport.appendChild(line);
+    const s = nodes.find(n => n.id === link.from);
+    const t = nodes.find(n => n.id === link.to);
+    const lEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lEl.setAttribute("class", `link l-${link.from} l-${link.to}`);
+    lEl.setAttribute("x1", s.x); lEl.setAttribute("y1", s.y);
+    lEl.setAttribute("x2", t.x); lEl.setAttribute("y2", t.y);
+    mainGroup.appendChild(lEl);
 });
 
-// 画点
+// 渲染节点
 nodes.forEach(node => {
-  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  g.setAttribute("class", "node");
-  
-  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  circle.setAttribute("cx", node.x); circle.setAttribute("cy", node.y);
-  circle.setAttribute("r", 12); circle.setAttribute("fill", "white");
-  circle.setAttribute("stroke", "var(--accent)"); circle.setAttribute("stroke-width", "2");
-  
-  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  text.setAttribute("x", node.x); text.setAttribute("y", node.y + 25);
-  text.setAttribute("text-anchor", "middle"); text.setAttribute("class", "node-label");
-  text.textContent = node.label;
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("class", "node");
+    g.style.cursor = "pointer";
 
-  g.appendChild(circle); g.appendChild(text);
-  g.onclick = () => showDetails(node);
-  viewport.appendChild(g);
+    const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
+    
+    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txt.setAttribute("x", node.x); txt.setAttribute("y", node.y + 25);
+    txt.setAttribute("text-anchor", "middle"); txt.setAttribute("class", "node-text");
+    txt.textContent = node.label;
+
+    g.appendChild(circ); g.appendChild(txt);
+    g.onclick = (e) => { e.stopPropagation(); clickNode(node); };
+    mainGroup.appendChild(g);
 });
 
-// 交互逻辑
-function showDetails(node) {
-  // 高亮线
-  document.querySelectorAll('.link').forEach(l => l.classList.remove('highlight'));
-  document.querySelectorAll(`.link-from-${node.id}, .link-to-${node.id}`).forEach(l => l.classList.add('highlight'));
+/* --- 3. INTERACTION & PAN/ZOOM --- */
+let scale = 1, tx = 0, ty = 0;
+let isDragging = false, startX, startY;
 
-  // 填充侧边栏
-  document.getElementById('default-msg').style.display = 'none';
-  document.getElementById('content-area').style.display = 'block';
-  document.getElementById('selected-name').textContent = node.label;
-  document.getElementById('selected-bio').innerHTML = node.bio;
+const updateTransform = () => {
+    mainGroup.setAttribute("transform", `translate(${tx},${ty}) scale(${scale})`);
+};
 
-  const related = links.filter(l => l.source === node.id || l.target === node.id);
-  const listHtml = related.map(l => {
-    const otherId = l.source === node.id ? l.target : l.source;
-    const otherNode = nodes.find(n => n.id === otherId);
-    return `<div class="relation-item"><strong>With ${otherNode.label}:</strong><br>${l.note}</div>`;
-  }).join('');
-  
-  document.getElementById('connections-list').innerHTML = listHtml;
-  
-  // 重新渲染侧边栏中的数学公式
-  MathJax.typeset();
+// Pan (拖动)
+svg.onmousedown = (e) => {
+    isDragging = true;
+    startX = e.clientX - tx;
+    startY = e.clientY - ty;
+};
+
+window.onmousemove = (e) => {
+    if (!isDragging) return;
+    tx = e.clientX - startX;
+    ty = e.clientY - startY;
+    updateTransform();
+};
+
+window.onmouseup = () => isDragging = false;
+
+// Zoom (缩放)
+svg.onwheel = (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    scale *= delta;
+    updateTransform();
+};
+
+function clickNode(node) {
+    document.getElementById('intro').style.display = 'none';
+    const det = document.getElementById('details');
+    det.style.display = 'block';
+    document.getElementById('s-name').textContent = node.label;
+    document.getElementById('s-bio').innerHTML = node.bio;
+
+    // Highlight links
+    document.querySelectorAll('.link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll(`.l-${node.id}`).forEach(l => l.classList.add('active'));
+
+    // Populate Relations
+    const rels = links.filter(l => l.from === node.id || l.to === node.id);
+    document.getElementById('s-links').innerHTML = rels.map(r => {
+        const other = r.from === node.id ? r.to : r.from;
+        const otherNode = nodes.find(n => n.id === other);
+        return `<div class="relation-box"><strong>vs ${otherNode.label}:</strong><br>${r.note}</div>`;
+    }).join('');
+
+    MathJax.typeset(); // Refresh Math symbols
 }
 </script>
 </body>
