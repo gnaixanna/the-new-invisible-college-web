@@ -20,7 +20,7 @@
             margin: 0; padding: 0;
             font-family: "Libre Baskerville", "Times New Roman", serif;
             background: var(--paper-bg); color: var(--ink);
-            overflow: hidden; /* 防止页面滚动，交给SVG处理 */
+            overflow: hidden; 
         }
 
         header {
@@ -60,6 +60,44 @@
 
         svg { width: 100%; height: 100%; }
 
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .zoom-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--paper-bg);
+            border: 1px solid var(--paper-border);
+            color: var(--accent);
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:hover {
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .zoom-btn:active {
+            transform: translateY(0);
+        }
+
         .link { stroke: #d4cfc3; stroke-opacity: 0.5; stroke-width: 1.5; fill: none; transition: 0.3s; }
         .link.active { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2.5; }
 
@@ -81,7 +119,7 @@
     <aside class="sidebar" id="sidebar">
         <div id="intro">
             <h2>Notes</h2>
-            <p style="font-size: 0.9rem; color: var(--ink-soft);">Click on a scientist to reveal their connections. Drag the background to pan, scroll to zoom.</p>
+            <p style="font-size: 0.9rem; color: var(--ink-soft);">Click on a scientist to reveal their connections. Drag the background to pan, scroll or use buttons to zoom.</p>
         </div>
         <div id="details" style="display:none;">
             <h2 id="s-name">Scientist</h2>
@@ -92,6 +130,11 @@
     </aside>
 
     <main class="diagram-container" id="canvas">
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="manualZoom(1.2)" title="Zoom In">+</button>
+            <button class="zoom-btn" onclick="manualZoom(0.8)" title="Zoom Out">−</button>
+        </div>
+        
         <svg id="scene">
             <g id="main-group"></g>
         </svg>
@@ -99,7 +142,7 @@
 </div>
 
 <script>
-/* --- 1. DATA CONFIGURATION (按你的参考图分组) --- */
+/* --- 数据配置保持不变 --- */
 const groups = {
     "stat":    { x: 500, y: 50,  label: "Statistical Physics" },
     "atomic":  { x: 750, y: 150, label: "Atomic Model" },
@@ -112,47 +155,34 @@ const groups = {
 };
 
 const nodes = [
-    // Statistical Physics (起源)
     { id: "boltzmann", label: "L. Boltzmann", group: "stat", bio: "统计力学之父。引入 $S = k \\ln W$，深刻影响了普朗克和薛定谔。" },
     { id: "maxwell", label: "J. C. Maxwell", group: "stat", bio: "建立电磁场理论与分子速率分布律。" },
     { id: "ehrenfest", label: "P. Ehrenfest", group: "stat", bio: "玻尔兹曼的学生，统计物理的传人，波尔的好友。" },
     { id: "gibbs", label: "J. W. Gibbs", group: "stat", bio: "奠定了化学热力学与统计力学的数学基础。" },
-
-    // Atomic & Early Quantum
     { id: "thomson", label: "J.J. Thomson", group: "atomic", bio: "发现电子。提出了原子的“枣糕模型”。" },
     { id: "rutherford", label: "E. Rutherford", group: "atomic", bio: "核物理之父。通过散射实验发现原子核。" },
     { id: "bohr", label: "N. Bohr", group: "atomic", bio: "哥本哈根学派教父，提出量子化轨道原子模型。" },
     { id: "planck", label: "M. Planck", group: "qm", bio: "发现普朗克常数 $h$，开启量子时代。" },
-
-    // Relativity & Roots
     { id: "michelson", label: "A. Michelson", group: "rel", bio: "迈克耳孙-莫雷实验证明了以太不存在。" },
     { id: "lorentz", label: "H. Lorentz", group: "rel", bio: "洛伦兹变换。爱因斯坦敬重的经典物理集大成者。" },
     { id: "einstein", label: "A. Einstein", group: "rel", bio: "相对论创立者。量子力学的最初推动者与终身质疑者。" },
     { id: "bose", label: "S. Bose", group: "rel", bio: "玻色-爱因斯坦统计。提出了光子的量子统计方法。" },
     { id: "perrin", label: "J. Perrin", group: "rel", bio: "通过布朗运动实验证实了原子的存在。" },
-    { id: "de Broglie", label: "de Broglie", group: "rel", bio: "" },
-
-    // Quantum Mechanics (核心层)
+    { id: "de Broglie", label: "de Broglie", group: "rel", bio: "提出物质波假说，认为微观粒子具有波粒二象性。" },
     { id: "born", label: "M. Born", group: "qm", bio: "提出波函数的概率解释，量子力学数学框架的奠基人。" },
     { id: "heisenberg", label: "W. Heisenberg", group: "qm", bio: "矩阵力学与不确定性原理。波尔的得意门生。" },
     { id: "schrodinger", label: "E. Schrodinger", group: "qm", bio: "波动力学创立者。薛定谔方程 $\\hat{H}\\psi = E\\psi$。" },
     { id: "pauli", label: "W. Pauli", group: "qm", bio: "不相容原理。物理学的“良心”，极为毒舌且严谨。" },
     { id: "dirac", label: "P. Dirac", group: "qm", bio: "狄拉克方程。完美统一了量子力学与狭义相对论。" },
-
-    // Condensed Matter & Soviet School
     { id: "ioffe", label: "A. Ioffe", group: "condensed", bio: "苏联物理学之父，半导体研究先驱。" },
     { id: "kapitsa", label: "P. Kapitsa", group: "condensed", bio: "发现液氦的超流性。" },
     { id: "landau", label: "L. Landau", group: "condensed", bio: "全才物理学家，凝聚态物理的领袖。" },
-
-    // Nuclear & Astrophysics
     { id: "meitner", label: "L. Meitner", group: "nuclear", bio: "核裂变理论解释者。唯一没有获得诺奖的裂变发现者。" },
     { id: "oppenheimer", label: "J. Oppenheimer", group: "nuclear", bio: "曼哈顿计划领导者，量子力学在美国的传播者。" },
     { id: "teller", label: "E. Teller", group: "nuclear", bio: "氢弹之父。与奥本海默关系复杂。" },
     { id: "fermi", label: "E. Fermi", group: "nuclear", bio: "原子能之父。理论与实验兼长的全才。" },
     { id: "fowler", label: "R. Fowler", group: "astro", bio: "统计力学大师。狄拉克和钱德拉塞卡的导师。" },
     { id: "chandrasekhar", label: "S. Chandrasekhar", group: "astro", bio: "发现白矮星质量极限（钱德拉塞卡极限）。" },
-
-    // High Energy & Particle (新生代)
     { id: "yukawa", label: "H. Yukawa", group: "field", bio: "预言介子，解释强相互作用。" },
     { id: "feynman", label: "R. Feynman", group: "field", bio: "路径积分，费曼图。量子电动力学大师。" },
     { id: "sakharov", label: "A. Sakharov", group: "field", bio: "苏联氢弹之父。重子失衡理论。" },
@@ -173,33 +203,26 @@ const links = [
     { from: "fowler", to: "dirac", note: "福勒是狄拉克的导师，并将海森堡的初稿交给了狄拉克。" },
     { from: "fowler", to: "chandrasekhar", note: "导师关系。福勒将费米-狄拉克统计应用到了白矮星研究。" },
     { from: "fermi", to: "yang", note: "杨振宁在芝加哥大学追随费米。费米认为杨不仅数学好，直觉也极强。" },
-    { from: "oppeneheimer", to: "yang", note: "杨振宁在普林斯顿高等研究院期间与奥本海默共事多年。" },
+    { from: "oppenheimer", to: "yang", note: "杨振宁在普林斯顿高等研究院期间与奥本海默共事多年。" },
     { from: "yang", to: "lee", note: "曾经最完美的合作者。共同获得诺奖，后因署名问题绝交。" },
     { from: "wu", to: "lee", note: "李政道提议吴健雄进行钴-60实验，从而证实了宇称不守恒。" },
     { from: "kapitsa", to: "landau", note: "卡皮查二战期间通过私人信件从斯大林手中救出了被捕的朗道。" }
 ];
 
-/* --- 2. LAYOUT ENGINE --- */
+/* --- 布局渲染 --- */
 const mainGroup = document.getElementById('main-group');
 const svg = document.getElementById('scene');
 
-// 初始化布局坐标
 nodes.forEach((node, i) => {
     const gCfg = groups[node.group];
     node.x = gCfg.x + (i % 3) * 100;
     node.y = gCfg.y + Math.floor(i / 3) * 100;
 });
 
-// 渲染连线 (增加了容错判断)
 links.forEach(link => {
     const s = nodes.find(n => n.id === link.from);
     const t = nodes.find(n => n.id === link.to);
-    
-    // 如果 ID 拼错了，跳过这一条线，而不是让整个程序崩溃
-    if (!s || !t) {
-        console.warn(`Link Error: Could not find node ${!s ? link.from : link.to}`);
-        return; 
-    }
+    if (!s || !t) return; 
 
     const lEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
     lEl.setAttribute("class", `link l-${link.from} l-${link.to}`);
@@ -207,7 +230,7 @@ links.forEach(link => {
     lEl.setAttribute("x2", t.x); lEl.setAttribute("y2", t.y);
     mainGroup.appendChild(lEl);
 });
-// 渲染节点
+
 nodes.forEach(node => {
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("class", "node");
@@ -226,7 +249,7 @@ nodes.forEach(node => {
     mainGroup.appendChild(g);
 });
 
-/* --- 3. INTERACTION & PAN/ZOOM --- */
+/* --- 交互逻辑更新 --- */
 let scale = 1, tx = 0, ty = 0;
 let isDragging = false, startX, startY;
 
@@ -234,7 +257,26 @@ const updateTransform = () => {
     mainGroup.setAttribute("transform", `translate(${tx},${ty}) scale(${scale})`);
 };
 
-// Pan (拖动)
+// 按钮点击缩放
+function manualZoom(factor) {
+    const oldScale = scale;
+    scale *= factor;
+    // 限制缩放范围
+    if (scale < 0.1) scale = 0.1;
+    if (scale > 5) scale = 5;
+
+    // 简单平移补偿，尽量让缩放看起来是中心发生的
+    const rect = svg.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    
+    tx = cx - (cx - tx) * (scale / oldScale);
+    ty = cy - (cy - ty) * (scale / oldScale);
+    
+    updateTransform();
+}
+
+// 拖拽
 svg.onmousedown = (e) => {
     isDragging = true;
     startX = e.clientX - tx;
@@ -250,11 +292,25 @@ window.onmousemove = (e) => {
 
 window.onmouseup = () => isDragging = false;
 
-// Zoom (缩放)
+// 滚轮缩放（降低了灵敏度系数，从 0.9/1.1 改为更精细的 0.95/1.05）
 svg.onwheel = (e) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    const oldScale = scale;
+    const delta = e.deltaY > 0 ? 0.95 : 1.05;
     scale *= delta;
+    
+    // 限制缩放范围
+    if (scale < 0.1) scale = 0.1;
+    if (scale > 5) scale = 5;
+
+    // 鼠标指向哪里，就以哪里为中心缩放
+    const rect = svg.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    tx = mouseX - (mouseX - tx) * (scale / oldScale);
+    ty = mouseY - (mouseY - ty) * (scale / oldScale);
+
     updateTransform();
 };
 
@@ -265,11 +321,9 @@ function clickNode(node) {
     document.getElementById('s-name').textContent = node.label;
     document.getElementById('s-bio').innerHTML = node.bio;
 
-    // Highlight links
     document.querySelectorAll('.link').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.l-${node.id}`).forEach(l => l.classList.add('active'));
 
-    // Populate Relations
     const rels = links.filter(l => l.from === node.id || l.to === node.id);
     document.getElementById('s-links').innerHTML = rels.map(r => {
         const other = r.from === node.id ? r.to : r.from;
@@ -277,7 +331,7 @@ function clickNode(node) {
         return `<div class="relation-box"><strong>vs ${otherNode.label}:</strong><br>${r.note}</div>`;
     }).join('');
 
-    MathJax.typeset(); // Refresh Math symbols
+    MathJax.typeset();
 }
 </script>
 </body>
