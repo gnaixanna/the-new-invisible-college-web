@@ -149,27 +149,115 @@ const groups = {
 };
 
 const nodes = [
-    { id: "boltzmann", label: "L. Boltzmann", group: "stat", bio: "统计力学之父。引入 $S = k \\ln W$。" },
-    { id: "maxwell", label: "J. C. Maxwell", group: "stat", bio: "建立电磁场理论与分子速率分布律。" },
-    { id: "ehrenfest", label: "P. Ehrenfest", group: "stat", bio: "统计物理的传人，波尔的好友。" },
-    { id: "gibbs", label: "J. W. Gibbs", group: "stat", bio: "奠定了化学热力学基础。" },
-    { id: "thomson", label: "J.J. Thomson", group: "atomic", bio: "发现电子。" },
-    { id: "rutherford", label: "E. Rutherford", group: "atomic", bio: "核物理之父。发现原子核。" },
-    { id: "bohr", label: "N. Bohr", group: "atomic", bio: "提出量子化轨道原子模型。" },
-    { id: "planck", label: "M. Planck", group: "qm", bio: "发现普朗克常数 $h$。" },
-    { id: "einstein", label: "A. Einstein", group: "rel", bio: "相对论创立者。" },
-    { id: "heisenberg", label: "W. Heisenberg", group: "qm", bio: "不确定性原理。" },
-    { id: "schrodinger", label: "E. Schrodinger", group: "qm", bio: "波动力学创立者。" },
-    { id: "dirac", label: "P. Dirac", group: "qm", bio: "狄拉克方程。" },
-    { id: "yang", label: "C.N. Yang (杨振宁)", group: "field", bio: "杨-米尔斯场论。" },
-    { id: "feynman", label: "R. Feynman", group: "field", bio: "量子电动力学大师。" }
+
+    // Statistical Physics (起源)
+    
+    { id: "boltzmann", label: "L. Boltzmann", group: "stat", bio: "Boltzmann's greatest achievements were the development of statistical mechanics and the statistical explanation of the second law of thermodynamics." },
+    
+    { id: "maxwell", label: "J. C. Maxwell", group: "stat", bio: "Maxwell was a key figure in the classical theory of electromagnetic radiation and the creation of statistical theory." },
+    
+    { id: "ehrenfest", label: "P. Ehrenfest", group: "stat", bio: "Ehrenfest made major contributions to statistical mechanics and its relation to quantum mechanics, including the theory of phase transition and the Ehrenfest theorem. " },
+    
+    
+    
+    // Atomic & Early Quantum
+    
+    { id: "thomson", label: "J.J. Thomson", group: "atomic", bio: "Discovered Electron." },
+    
+    { id: "rutherford", label: "E. Rutherford", group: "atomic", bio: "核物理之父。通过散射实验发现原子核。" },
+    
+    { id: "bohr", label: "N. Bohr", group: "atomic", bio: "哥本哈根学派教父，提出量子化轨道原子模型。" },
+    
+    { id: "planck", label: "M. Planck", group: "qm", bio: "发现普朗克常数 $h$，开启量子时代。" },
+    
+    
+    
+    // Relativity & Roots
+    
+    { id: "michelson", label: "A. Michelson", group: "rel", bio: "迈克耳孙-莫雷实验证明了以太不存在。" },
+    
+    { id: "lorentz", label: "H. Lorentz", group: "rel", bio: "洛伦兹变换。爱因斯坦敬重的经典物理集大成者。" },
+    
+    { id: "einstein", label: "A. Einstein", group: "rel", bio: "相对论创立者。量子力学的最初推动者与终身质疑者。" },
+    
+    { id: "bose", label: "S. Bose", group: "rel", bio: "玻色-爱因斯坦统计。提出了光子的量子统计方法。" },
+    
+    { id: "perrin", label: "J. Perrin", group: "rel", bio: "通过布朗运动实验证实了原子的存在。" },
+    
+    { id: "de Broglie", label: "de Broglie", group: "rel", bio: "" },
+    
+    
+    
+    // Quantum Mechanics (核心层)
+    
+    { id: "born", label: "M. Born", group: "qm", bio: "提出波函数的概率解释，量子力学数学框架的奠基人。" },
+    
+    { id: "heisenberg", label: "W. Heisenberg", group: "qm", bio: "矩阵力学与不确定性原理。波尔的得意门生。" },
+    
+    { id: "schrodinger", label: "E. Schrodinger", group: "qm", bio: "波动力学创立者。薛定谔方程 $\\hat{H}\\psi = E\\psi$。" },
+    
+    { id: "pauli", label: "W. Pauli", group: "qm", bio: "不相容原理。物理学的“良心”，极为毒舌且严谨。" },
+    
+    { id: "dirac", label: "P. Dirac", group: "qm", bio: "狄拉克方程。完美统一了量子力学与狭义相对论。" },
+    
+    
+    
+    // Condensed Matter & Soviet School
+    
+    { id: "ioffe", label: "A. Ioffe", group: "condensed", bio: "苏联物理学之父，半导体研究先驱。" },
+    
+    { id: "kapitsa", label: "P. Kapitsa", group: "condensed", bio: "发现液氦的超流性。" },
+    
+    { id: "landau", label: "L. Landau", group: "condensed", bio: "全才物理学家，凝聚态物理的领袖。" },
+    
+    
+    
+    // Nuclear & Astrophysics
+    
+    { id: "meitner", label: "L. Meitner", group: "nuclear", bio: "核裂变理论解释者。唯一没有获得诺奖的裂变发现者。" },
+    
+    { id: "oppenheimer", label: "J. Oppenheimer", group: "nuclear", bio: "曼哈顿计划领导者，量子力学在美国的传播者。" },
+    
+    { id: "teller", label: "E. Teller", group: "nuclear", bio: "氢弹之父。与奥本海默关系复杂。" },
+    
+    { id: "fermi", label: "E. Fermi", group: "nuclear", bio: "原子能之父。理论与实验兼长的全才。" },
+    
+    { id: "fowler", label: "R. Fowler", group: "astro", bio: "统计力学大师。狄拉克和钱德拉塞卡的导师。" },
+    
+    { id: "chandrasekhar", label: "S. Chandrasekhar", group: "astro", bio: "发现白矮星质量极限（钱德拉塞卡极限）。" },
+    
+    
+    
+    // High Energy & Particle (新生代)
+    
+    { id: "yukawa", label: "H. Yukawa", group: "field", bio: "预言介子，解释强相互作用。" },
+    
+    { id: "feynman", label: "R. Feynman", group: "field", bio: "路径积分，费曼图。量子电动力学大师。" },
+    
+    { id: "sakharov", label: "A. Sakharov", group: "field", bio: "苏联氢弹之父。重子失衡理论。" },
+    
+    { id: "wu", label: "C.S. Wu (吴健雄)", group: "field", bio: "物理学第一夫人。实验证实了宇称不守恒。" },
+    
+    { id: "lee", label: "T.D. Lee (李政道)", group: "field", bio: "提出弱相互作用下宇称不守恒。" },
+    
+    { id: "yang", label: "C.N. Yang (杨振宁)", group: "field", bio: "杨-米尔斯场论，杨-巴克斯特方程。当代最伟大的物理学家之一。" }
+
 ];
 
 const links = [
-    { from: "boltzmann", to: "planck", note: "普朗克借用了玻尔兹曼的统计方法。" },
-    { from: "rutherford", to: "bohr", note: "师徒关系。" },
-    { from: "bohr", to: "heisenberg", note: "共同构建了哥本哈根诠释。" }
-];
+    { from: "boltzmann", to: "maxwell", note: "Boltzmann introduced external potential in 1868 to the Maxwell distribution that was established in 1860. This set the basis of the Boltzmann equation in 1872. (Sklar, Lawrence (1993). Physics and Chance: Philosophical Issues in the Foundations of Statistical Mechanics. New York: Cambridge University Press.)" },
+    { from: "boltzmann", to: "ehrenfest", note: "Ehrenfest attended Boltzmann's lectures on the mechanical theory of heat during 1899-1900. (Boltzmann then left Vienna for Leipzig) Suddenly, thanks mainly to Boltzmann, the negative thoughts about education which he had at school were replaced with a great love for mathematics and physics. He obtained his doctorate from Vienna in 1904, under Boltzmann's supervision, on a topic in classical mechanics The motion of rigid bodies in fluids and the mechanics of Hertz.(mac tutor, the making of a theoretical physicist)" },
+    { from: "boltzmann", to: "planck", note: "'In doing so he had to reject his belief that the second law of thermodynamics was an absolute law of nature, and accept Boltzmann's interpretation that it was a statistical law.' Mac tutor. Planck borrowed Boltzmann's method to avoid ultraviolet catastrophe, which led to the idea of quantum. (Although Boltzmann fought for atoms, he considered discretization merely as a mathematical approach) Planck was also the first one to establish the Boltzmann constant." }
+    { from: "boltzmann", to: "einstein", note: "1905, brownian motion -> proof of the existence of atoms; Einstein further discovered that Bose's method of counting applied not only to light but also to atoms, and that it produced a remarkable condensation phenomenon at low temperatures." },
+    { from: "boltzmann", to: "lorentz", note: "lorentz applied Boltzmann euqation to explore the electrons' behavior in conduction. (lorentz gas model)" },
+    { from: "boltzmann", to: "bose", note: "Bose discovered that if the contents of the lattice were completely indistinguishable, the manual remained valid, but a different method of counting was needed.)" },
+    { from: "boltzmann", to: "perrin", note: "Jean Perrin's 1908–1909 experiments on Brownian motion provided definitive, quantitative evidence for the existence of atoms and molecules" },
+    { from: "boltzmann", to: "schrodinger", note: "'His line of thought may be called my first love in science, No other has ever thus enraptured me or willever do so again'. His thesis advisor and director of the secondInstitute for Experimental Physics at the University of Vienna, Franz Serafin Exner, was an ardent admirer of Boltzmann (Schrödinger, centenary celebration of a polymat,chapter 2)" },
+    { from: "boltzmann", to: "meitner", note: "'A fairly typical curriculum, it washighly unusual in one respect: all of it wastaught by just one person, the theoreticalphysicist Ludwig Boltzmann' (Lise Meitner : a life in physicsby Sime, Ruth Lewin)" },
+    { from: "boltzmann", to: "dirac", note: "When Fermi and Dirac derived Fermi-Dirac statistics in 1926, they completely followed Boltzmann's combinatorial mathematical logic." },
+    { from: "boltzmann", to: "fermi", note: "When Fermi and Dirac derived Fermi-Dirac statistics in 1926, they completely followed Boltzmann's combinatorial mathematical logic." },
+    { from: "boltzmann", to: "fowler", note: "Fowler explored Darwin-Fowler Method : Mathematically proved that the 'most probable value' is always equal to the 'average value'. Freed from dependence on Stirling's Approximation, used saddle point approximation." },
+        ];
 
 /* --- 初始化与布局 --- */
 const mainGroup = document.getElementById('main-group');
