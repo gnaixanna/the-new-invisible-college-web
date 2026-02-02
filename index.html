@@ -61,37 +61,36 @@
         svg { width: 100%; height: 100%; }
 
         /* Zoom Controls */
+        /* 确保按钮在最上层 */
         .zoom-controls {
             position: absolute;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            z-index: 20;
+            z-index: 999; /* 极大值确保不被覆盖 */
         }
-
+        
         .zoom-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--paper-bg);
-            border: 1px solid var(--paper-border);
-            color: var(--accent);
+            width: 50px;
+            height: 50px;
+            border-radius: 8px; /* 改为方圆角，更有科技感 */
+            background: var(--accent); /* 使用主题棕色，更显眼 */
+            color: white;
+            border: none;
             font-size: 24px;
-            font-weight: bold;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.2s;
+            transition: 0.2s;
         }
-
+        
         .zoom-btn:hover {
-            background: #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            transform: translateY(-2px);
+            background: #a6855d;
+            transform: scale(1.1);
         }
 
         .zoom-btn:active {
@@ -127,6 +126,20 @@
             <hr style="border: 0; border-top: 1px solid var(--paper-border); margin: 20px 0;">
             <div id="s-links"></div>
         </div>
+    <div class="container" style="position: relative;"> <aside class="sidebar" id="sidebar">
+            </aside>
+
+        <main class="diagram-container" id="canvas">
+            <svg id="scene">
+                <g id="main-group"></g>
+            </svg>
+        </main>
+    
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="manualZoom(1.2)">＋</button>
+            <button class="zoom-btn" onclick="manualZoom(0.8)">－</button>
+        </div>
+    </div>
     </aside>
 
     <main class="diagram-container" id="canvas">
