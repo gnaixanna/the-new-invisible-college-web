@@ -350,14 +350,33 @@ svg.onwheel = (e) => {
 };
 
 function clickNode(node) {
+    // 1. 隐藏欢迎语，显示详情面板
     document.getElementById('intro').style.display = 'none';
     const det = document.getElementById('details');
     det.style.display = 'block';
+
+    // 2. 填充基本信息：姓名和生平
     document.getElementById('s-name').textContent = node.label;
     document.getElementById('s-bio').innerHTML = node.bio;
+
+    // 3. 高亮显示与该科学家相关的连线
     document.querySelectorAll('.link').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.l-${node.id}`).forEach(l => l.classList.add('active'));
-    MathJax.typeset();
+
+    // 4. 【关键步骤】：提取并显示连线中的文字（Relations）
+    const rels = links.filter(l => l.from === node.id || l.to === node.id);
+    document.getElementById('s-links').innerHTML = rels.map(r => {
+        const otherId = r.from === node.id ? r.to : r.from;
+        const otherNode = nodes.find(n => n.id === otherId);
+        // 如果找不到对方节点（比如拼写错误），就不显示
+        if (!otherNode) return ''; 
+        return `<div class="relation-box"><strong>Connection with ${otherNode.label}:</strong><br>${r.note}</div>`;
+    }).join('');
+
+    // 5. 触发 MathJax 渲染公式
+    if (window.MathJax && window.MathJax.typeset) {
+        MathJax.typeset();
+    }
 }
 </script>
 </body>
