@@ -97,7 +97,7 @@
         /* Elements */
         .link { stroke: #d4cfc3; stroke-opacity: 0.5; stroke-width: 1.5; fill: none; transition: 0.3s; }
         .link.active { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2.5; }
-        .node circle { fill: white; stroke: var(--accent); stroke-width: 2; transition: 0.3s; }
+        .node circle { fill: white; stroke-width: 3; transition: 0.3s; }
         .node:hover circle { fill: #fff5e6; r: 15; }
         .node-text { font-size: 11px; fill: var(--ink); pointer-events: none; font-weight: bold; }
         /* 图例容器 */
@@ -421,13 +421,17 @@ nodes.forEach(node => {
     const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
     
-    // [NEW] 根据组别设置描边颜色
-    circ.setAttribute("stroke", groups[node.group].color); 
+    // 这里设置颜色
+    const groupColor = groups[node.group].color;
+    circ.setAttribute("stroke", groupColor); 
+    circ.setAttribute("stroke-width", "3"); // 让边框粗一点，颜色更明显
+    circ.setAttribute("fill", "white");     // 保持中间是白的，干净一些
     
     const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
     txt.setAttribute("x", node.x); txt.setAttribute("y", node.y + 25);
     txt.setAttribute("text-anchor", "middle"); txt.setAttribute("class", "node-text");
     txt.textContent = node.label;
+    
     g.appendChild(circ); g.appendChild(txt);
     g.onclick = (e) => { e.stopPropagation(); clickNode(node); };
     mainGroup.appendChild(g);
