@@ -44,10 +44,10 @@
 
         .sidebar h2 { font-size: 1.3rem; color: var(--accent); margin-top: 0; }
         .relation-box { 
-            margin-top: 20px; 
-            padding: 12px; 
-            font-size: 0.9rem;
-            /* 这里的 border 和 background 将由 JS 动态注入 */
+            padding: 10px; 
+            font-size: 0.85rem; 
+            border-radius: 4px; /* 加一点圆角 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03); /* 给内部小卡片加一点点投影 */
         }
 
         /* Diagram Area */
@@ -499,28 +499,51 @@ function clickNode(node) {
     document.getElementById('s-name').textContent = node.label;
     document.getElementById('s-bio').innerHTML = node.bio;
 
+    // 高亮连线
     document.querySelectorAll('.link').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.l-${node.id}`).forEach(l => l.classList.add('active'));
 
-    // 在 clickNode(node) 函数内部
     const rels = links.filter(l => l.from === node.id || l.to === node.id);
-    document.getElementById('s-links').innerHTML = rels.map(r => {
+    
+    // 1. 按组进行归类
+    const groupedRels = {};
+    rels.forEach(r => {
         const otherId = r.from === node.id ? r.to : r.from;
         const otherNode = nodes.find(n => n.id === otherId);
-        if (!otherNode) return ''; 
-    
-        // [关键修改]：获取对方节点所属组的颜色
-        const categoryColor = groups[otherNode.group].color;
-    
-        // [关键修改]：将 border-left 的颜色设置为变量 categoryColor
-        return `
-            <div class="relation-box" style="border-left: 4px solid ${categoryColor}; background: ${categoryColor}0D;">
-                <small style="color:${categoryColor}; font-weight:bold;">[Line #${r.lineNum}]</small><br>
-                <strong>Connection with ${otherNode.label}:</strong>
-                <span style="font-size: 0.7rem; color: var(--ink-soft);"> (${groups[otherNode.group].label})</span><br>
-                <div style="margin-top: 5px;">${r.note}</div>
-            </div>`;
-    }).join('');
+        if (!otherNode) return;
+        
+        const gKey = otherNode.group;
+        if (!groupedRels[gKey]) groupedRels[gKey] = [];
+        groupedRels[gKey].push({ link: r, target: otherNode });
+    });
+
+    // 2. 构造 HTML
+    let html = '';
+    for (const gKey in groupedRels) {
+        const groupInfo = groups[gKey];
+        const items = groupedRels[gKey];
+        
+        // 创建一个该领域的“大包裹框”
+        html += `
+            <div style="background: ${groupInfo.color}15; border-radius: 8px; padding: 12px; margin-bottom: 20px; border: 1px solid ${groupInfo.color}33;">
+                <h4 style="margin: 0 0 10px 0; color: ${groupInfo.color}; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                    ${groupInfo.label}
+                </h4>
+        `;
+
+        // 在框内渲染具体的关系
+        html += items.map(item => `
+            <div class="relation-box" style="background: white; margin-top: 8px; border-left: 3px solid ${groupInfo.color};">
+                <small style="color:var(--ink-soft);">[Line #${item.link.lineNum}]</small><br>
+                <strong>With ${item.target.label}:</strong><br>
+                ${item.link.note}
+            </div>
+        `).join('');
+
+        html += `</div>`; // 闭合大包裹框
+    }
+
+    document.getElementById('s-links').innerHTML = html || '<p>No specific records found.</p>';
 
     if (window.MathJax && window.MathJax.typeset) {
         MathJax.typeset();
