@@ -175,6 +175,14 @@ const groups = {
     "astro":     { x: 800, y: 650, label: "Astrophysics", color: "#457b9d", desc: "Celestial bodies and cosmic limits" },
     "field":     { x: 550, y: 750, label: "Quantum Field Theory", color: "#6d597a", desc: "High energy and particle physics" }
 };
+/* --- 长宽比压缩逻辑 --- */
+const compressY = 0.75; // 压缩率：1.0 是原状，0.75 会减少 25% 的高度
+const spreadX = 1.1;    // 补偿系数：稍微拉开横向距离，防止节点重叠
+
+Object.keys(groups).forEach(key => {
+    groups[key].y = groups[key].y * compressY;
+    groups[key].x = groups[key].x * spreadX;
+});
 
 const nodes = [
 
@@ -368,19 +376,25 @@ nodes.forEach(n => {
 });
 
 // 2. 初始化坐标逻辑
+// 2. 初始化坐标逻辑
 nodes.forEach((node, i) => {
     const gCfg = groups[node.group];
-    const centerX = 600; // 假设画布中心为 600
+    const centerX = 600; 
     
-    // 连接数越多，越靠近中心 (简易权重计算)
+    // 【修改点】改为每行 4 个，并收紧间距，从而压扁布局
+    const col = i % 4;
+    const row = Math.floor(i / 4);
+    const nodeSpacingX = 110; 
+    const nodeSpacingY = 85; 
+
     const pullingForce = (node.degree > 5) ? (centerX - gCfg.x) * 0.2 : 0;
     
-    // 微小偏移 (Jitter)，防止完全重叠
-    const jitterX = (i % 2 === 0 ? 1 : -1) * 15;
-    const jitterY = (i % 3 === 0 ? 1 : -1) * 10;
+    // 微小偏移 (Jitter)
+    const jitterX = (i % 2 === 0 ? 1 : -1) * 10;
+    const jitterY = (i % 3 === 0 ? 1 : -1) * 5;
 
-    node.x = gCfg.x + (i % 3) * 130 + pullingForce + jitterX;
-    node.y = gCfg.y + Math.floor(i / 3) * 110 + jitterY;
+    node.x = gCfg.x + col * nodeSpacingX + pullingForce + jitterX;
+    node.y = gCfg.y + row * nodeSpacingY + jitterY;
 });
 // 自动生成图例并挂载到侧边栏
 const sidebar = document.getElementById('sidebar');
