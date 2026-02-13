@@ -100,6 +100,23 @@
         .node circle { fill: white; stroke-width: 3; transition: 0.3s; }
         .node:hover circle { fill: #fff5e6; r: 15; }
         .node-text { font-size: 11px; fill: var(--ink); pointer-events: none; font-weight: bold; }
+        /* 找到或添加这个类 */
+        .link-num { 
+            font-size: 10px; 
+            fill: var(--accent); 
+            font-weight: bold; 
+            paint-order: stroke; 
+            stroke: #fff; 
+            stroke-width: 3px; 
+            pointer-events: none; 
+            opacity: 0; /* 默认隐藏 */
+            transition: opacity 0.3s; /* 添加淡入淡出效果 */
+        }
+        
+        /* 当父级线激活时，文字显示 */
+        .link-num.active { 
+            opacity: 1; 
+        }
         /* 图例容器 */
         .legend { 
             margin-top: 30px; 
@@ -531,7 +548,11 @@ function clickNode(node) {
     // 高亮连线
     document.querySelectorAll('.link').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.l-${node.id}`).forEach(l => l.classList.add('active'));
-
+    // 1. 先清除所有线和数字的激活状态
+    document.querySelectorAll('.link, .link-num').forEach(el => el.classList.remove('active'));
+    
+    // 2. 为当前科学家相关的线和数字添加激活状态
+    document.querySelectorAll(`.l-${node.id}`).forEach(el => el.classList.add('active'));
     const rels = links.filter(l => l.from === node.id || l.to === node.id);
     
     // 1. 按组进行归类
