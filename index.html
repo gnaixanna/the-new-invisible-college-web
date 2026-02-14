@@ -293,13 +293,13 @@ const nodes = [
     
     { id: "lee", label: "T.D. Lee (李政道)", group: "field", bio: "Tsung-Dao Lee proposed that parity is not conserved under weak interactions." },
     
-    { id: "yang", label: "C.N. Yang (杨振宁)", group: "field", bio: "" }
+    { id: "yang", label: "C.N. Yang (杨振宁)", group: "field", bio: "Co-developed non-abelian gauge theory, which is widely known as the Yang–Mills theory" }
 
 ];
 
 const links = [
     { from: "boltzmann", to: "maxwell", note: "Boltzmann introduced external potential in 1868 to the Maxwell distribution that was established in 1860. This set the basis of the Boltzmann equation in 1872. (Sklar, Lawrence (1993). Physics and Chance: Philosophical Issues in the Foundations of Statistical Mechanics. New York: Cambridge University Press.)" },
-    { from: "boltzmann", to: "ehrenfest", note: "Ehrenfest attended Boltzmann's lectures on the mechanical theory of heat during 1899-1900. (Boltzmann then left Vienna for Leipzig) Suddenly, thanks mainly to Boltzmann, the negative thoughts about education which he had at school were replaced with a great love for mathematics and physics. He obtained his doctorate from Vienna in 1904, under Boltzmann's supervision, on a topic in classical mechanics The motion of rigid bodies in fluids and the mechanics of Hertz.(mac tutor, the making of a theoretical physicist)" },
+    { from: "boltzmann", to: "ehrenfest", note: "Ehrenfest attended Boltzmann's lectures on the mechanical theory of heat during 1899–1900, before Boltzmann left Vienna for Leipzig. Suddenly, thanks mainly to Boltzmann, his earlier negative feelings toward education were replaced by a profound love for mathematics and physics. In 1904, he obtained his doctorate from the University of Vienna under Boltzmann's supervision; his dissertation, titled The Motion of Rigid Bodies in Fluids and the Mechanics of Hertz, focused on classical mechanics. Later, Ehrenfest co-developed the Ehrenfest model with Tatiana Ehrenfest to vindicate Boltzmann's work, demonstrating that the Second Law of Thermodynamics is essentially a statistical law rather than an absolute one." },
     { from: "boltzmann", to: "planck", note: "'In doing so he had to reject his belief that the second law of thermodynamics was an absolute law of nature, and accept Boltzmann's interpretation that it was a statistical law.' Mac tutor. Planck borrowed Boltzmann's method to avoid ultraviolet catastrophe, which led to the idea of quantum. (Although Boltzmann fought for atoms, he considered discretization merely as a mathematical approach) Planck was also the first one to establish the Boltzmann constant." },
     { from: "boltzmann", to: "einstein", note: "1905, brownian motion -> proof of the existence of atoms; Einstein further discovered that Bose's method of counting applied not only to light but also to atoms, and that it produced a remarkable condensation phenomenon at low temperatures." },
     { from: "boltzmann", to: "lorentz", note: "lorentz applied Boltzmann euqation to explore the electrons' behavior in conduction. (lorentz gas model)" },
@@ -311,10 +311,9 @@ const links = [
     { from: "boltzmann", to: "dirac", note: "When Fermi and Dirac derived Fermi-Dirac statistics in 1926, they completely followed Boltzmann's combinatorial mathematical logic." },
     { from: "boltzmann", to: "fermi", note: "When Fermi and Dirac derived Fermi-Dirac statistics in 1926, they completely followed Boltzmann's combinatorial mathematical logic." },
     { from: "boltzmann", to: "fowler", note: "Fowler explored Darwin-Fowler Method : Mathematically proved that the 'most probable value' is always equal to the 'average value'. Freed from dependence on Stirling's Approximation, used saddle point approximation." },
-    { from: "maxwell", to: "ehrenfest", note: "/" },
-    { from: "maxwell", to: "thomson", note: "/" },
-    { from: "maxwell", to: "planck", note: "/" },
-    { from: "maxwell", to: "michelson", note: "/" },
+    { from: "maxwell", to: "thomson", note: "Maxwell wrote A Treatise on Electricity and Magnetism, while Thomson, after discovering the existence of electrons, wrote Notes on Recent Researches in Electricity and Magnetism, intended as a sequel to James Clerk Maxwell’s Treatise." },
+    { from: "maxwell", to: "planck", note: "Planck originally rejected Einstein's hypothesis of light quanta because he could not completely discard Maxwell's theory of electrodynamics." },
+    { from: "maxwell", to: "michelson", note: "Maxwell believed that the propagation of light required a medium for the waves, dubbed the luminiferous aether. This was impossible to reconcile with the Michelson–Morley experiment." },
     { from: "maxwell", to: "lorentz", note: "/" },
     { from: "maxwell", to: "einstein", note: "/" },
     { from: "maxwell", to: "bose", note: "/" },
@@ -330,8 +329,8 @@ const links = [
     { from: "thomson", to: "rutherford", note: "/" },
     { from: "thomson", to: "bohr", note: "/" },
     { from: "thomson", to: "oppenheimer", note: "/" },
-    { from: "rutherford", to: "bohr", note: "/" },
-    { from: "rutherford", to: "kapitsa", note: "/" },
+    { from: "rutherford", to: "bohr", note: "After being neglected by and failed to impress Thomson in 1911, Bohr received an invitation from Rutherford to conduct post-doctoral work at Victoria University of Manchester. In 1912, after Bohr returned to Denmark, he adapted Rutherford's nuclear structure to Max Planck's quantum theory and so created his Bohr model of the atom." },
+    { from: "rutherford", to: "kapitsa", note: "Despite initial rejection, Kapitsa persevered in persuading Rutherford to accept him as his student. Kapitsa greatly admired Rutherford's straight forward character and pursuit of truth, secretly calling him 'the crocodile' because it was his favorite animal." },
     { from: "rutherford", to: "meitner", note: "/" },
     { from: "rutherford", to: "oppenheimer", note: "/" },
     { from: "rutherford", to: "fowler", note: "/" },
@@ -380,8 +379,8 @@ const links = [
     { from: "ioffe", to: "kapitsa", note: "/" },
     { from: "ioffe", to: "landau", note: "/" },
     { from: "kapitsa", to: "landau", note: "/" },
-    { from: "kapitsa", to: "dirac", note: "/" },
-    { from: "kapitsa", to: "fowler", note: "/" },
+    { from: "kapitsa", to: "dirac", note: "Kapitsa met Dirac in the Cavendish Laboratory, under Rutherford's supervision. Dirac attended Kapitsa's club and was a close friend of him." },
+
         ];
 /* --- 初始化与布局 --- */
 const mainGroup = document.getElementById('main-group');
