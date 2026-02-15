@@ -6,7 +6,6 @@
     <title>The New Invisible College</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <style>
         :root {
@@ -380,75 +379,33 @@ nodes.forEach(n => {
     n.degree = links.filter(l => l.from === n.id || l.to === n.id).length;
 });
 
-// 2. Force-directed layout using D3-force
-// Prepare D3 simulation
-const width = 1200, height = 800;
-const simulation = d3.forceSimulation(nodes)
-    .force("link", d3.forceLink(links).id(d => d.id).distance(120).strength(0.2))
-    .force("charge", d3.forceManyBody().strength(-250))
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collision", d3.forceCollide(35));
+// 2. 初始化坐标逻辑
+// 2. 初始化坐标逻辑
+nodes.forEach((node, i) => {
+    const gCfg = groups[node.group];
+    const centerX = 600; 
+    
+    // 【修改点】改为每行 4 个，并收紧间距，从而压扁布局
+    const col = i % 4;
+    const row = Math.floor(i / 4);
+    const nodeSpacingX = 110; 
+    const nodeSpacingY = 85; 
 
-// Remove previous rendering logic
-mainGroup.innerHTML = '';
+    const pullingForce = (node.degree > 5) ? (centerX - gCfg.x) * 0.2 : 0;
+    
+    // 微小偏移 (Jitter)
+    const jitterX = (i % 2 === 0 ? 1 : -1) * 10;
+    const jitterY = (i % 3 === 0 ? 1 : -1) * 5;
 
-// Render function
-function renderDiagram() {
-    mainGroup.innerHTML = '';
-    // Draw links
-    links.forEach((link, idx) => {
-        const s = nodes.find(n => n.id === link.from);
-        const t = nodes.find(n => n.id === link.to);
-        if (!s || !t) return;
-        const lineId = idx + 1;
-        link.lineNum = lineId;
-        const lEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        lEl.setAttribute("class", `link l-${link.from} l-${link.to}`);
-        lEl.setAttribute("x1", s.x); lEl.setAttribute("y1", s.y);
-        lEl.setAttribute("x2", t.x); lEl.setAttribute("y2", t.y);
-        mainGroup.appendChild(lEl);
-        // Line number
-        const midX = (s.x + t.x) / 2;
-        const midY = (s.y + t.y) / 2;
-        const tEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        tEl.setAttribute("x", midX); tEl.setAttribute("y", midY);
-        tEl.setAttribute("class", `link-num l-${link.from} l-${link.to}`);
-        tEl.setAttribute("style", "font-size: 10px; fill: var(--accent); font-weight: bold; paint-order: stroke; stroke: #fff; stroke-width: 3px; pointer-events:none;");
-        tEl.textContent = lineId;
-        mainGroup.appendChild(tEl);
-    });
-    // Draw nodes
-    nodes.forEach(node => {
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.setAttribute("class", "node");
-        const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
-        const groupColor = groups[node.group].color;
-        circ.setAttribute("stroke", groupColor);
-        circ.setAttribute("stroke-width", "3");
-        circ.setAttribute("fill", "white");
-        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        txt.setAttribute("x", node.x); txt.setAttribute("y", node.y + 25);
-        txt.setAttribute("text-anchor", "middle"); txt.setAttribute("class", "node-text");
-        txt.textContent = node.label;
-        g.appendChild(circ); g.appendChild(txt);
-        g.onclick = (e) => { e.stopPropagation(); clickNode(node); };
-        mainGroup.appendChild(g);
-    });
-}
-
-// Run simulation and update positions
-function animateDiagram() {
-    renderDiagram();
-    requestAnimationFrame(animateDiagram);
-}
-simulation.on("tick", renderDiagram);
-animateDiagram();
+    node.x = gCfg.x + col * nodeSpacingX + pullingForce + jitterX;
+    node.y = gCfg.y + row * nodeSpacingY + jitterY;
+});
 // 自动生成图例并挂载到侧边栏
 const sidebar = document.getElementById('sidebar');
 const legendBox = document.createElement('div');
 legendBox.className = 'legend';
 legendBox.innerHTML = '<h3>Field Legend</h3>';
+
 Object.keys(groups).forEach(key => {
     const g = groups[key];
     legendBox.innerHTML += `
@@ -461,6 +418,57 @@ Object.keys(groups).forEach(key => {
         </div>`;
 });
 sidebar.appendChild(legendBox);
+
+// [UPDATE] 3. 渲染连线（包含编号生成）
+links.forEach((link, idx) => {
+    const s = nodes.find(n => n.id === link.from);
+    const t = nodes.find(n => n.id === link.to);
+    if (!s || !t) return;
+    
+    const lineId = idx + 1; // 生成编号
+    link.lineNum = lineId;  // 存入数据中
+
+    // 绘制线
+    const lEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lEl.setAttribute("class", `link l-${link.from} l-${link.to}`);
+    lEl.setAttribute("x1", s.x); lEl.setAttribute("y1", s.y);
+    lEl.setAttribute("x2", t.x); lEl.setAttribute("y2", t.y);
+    mainGroup.appendChild(lEl);
+
+    // [NEW] 绘制编号文字
+    const midX = (s.x + t.x) / 2;
+    const midY = (s.y + t.y) / 2;
+    const tEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    tEl.setAttribute("x", midX); tEl.setAttribute("y", midY);
+    tEl.setAttribute("class", `link-num l-${link.from} l-${link.to}`);
+    // 给编号加一点白边，防止被线条遮挡
+    tEl.setAttribute("style", "font-size: 10px; fill: var(--accent); font-weight: bold; paint-order: stroke; stroke: #fff; stroke-width: 3px; pointer-events:none;");
+    tEl.textContent = lineId;
+    mainGroup.appendChild(tEl);
+});
+
+// [UPDATE] 4. 渲染节点（给圆圈上色）
+nodes.forEach(node => {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("class", "node");
+    const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
+    
+    // 这里设置颜色
+    const groupColor = groups[node.group].color;
+    circ.setAttribute("stroke", groupColor); 
+    circ.setAttribute("stroke-width", "3"); // 让边框粗一点，颜色更明显
+    circ.setAttribute("fill", "white");     // 保持中间是白的，干净一些
+    
+    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txt.setAttribute("x", node.x); txt.setAttribute("y", node.y + 25);
+    txt.setAttribute("text-anchor", "middle"); txt.setAttribute("class", "node-text");
+    txt.textContent = node.label;
+    
+    g.appendChild(circ); g.appendChild(txt);
+    g.onclick = (e) => { e.stopPropagation(); clickNode(node); };
+    mainGroup.appendChild(g);
+});
 
 /* --- 交互控制 --- */
 let scale = 1, tx = 0, ty = 0;
@@ -523,15 +531,13 @@ function clickNode(node) {
     det.style.display = 'block';
     document.getElementById('s-name').textContent = node.label;
     document.getElementById('s-bio').innerHTML = node.bio;
-    // Scroll sidebar to top (head)
-    const sidebar = document.getElementById('sidebar');
-    sidebar.scrollTo({ top: 0, behavior: 'smooth' });
 
     // 高亮连线
     document.querySelectorAll('.link').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.l-${node.id}`).forEach(l => l.classList.add('active'));
     // 1. 先清除所有线和数字的激活状态
     document.querySelectorAll('.link, .link-num').forEach(el => el.classList.remove('active'));
+    
     // 2. 为当前科学家相关的线和数字添加激活状态
     document.querySelectorAll(`.l-${node.id}`).forEach(el => el.classList.add('active'));
     const rels = links.filter(l => l.from === node.id || l.to === node.id);
@@ -575,10 +581,10 @@ function clickNode(node) {
     }
 
     document.getElementById('s-links').innerHTML = html || '<p>No specific records found.</p>';
+
     if (window.MathJax && window.MathJax.typeset) {
         MathJax.typeset();
     }
-    // ...existing code...
 }
 </script>
 </body>
