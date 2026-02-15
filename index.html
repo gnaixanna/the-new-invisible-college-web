@@ -449,7 +449,6 @@ const sidebar = document.getElementById('sidebar');
 const legendBox = document.createElement('div');
 legendBox.className = 'legend';
 legendBox.innerHTML = '<h3>Field Legend</h3>';
-
 Object.keys(groups).forEach(key => {
     const g = groups[key];
     legendBox.innerHTML += `
@@ -462,57 +461,6 @@ Object.keys(groups).forEach(key => {
         </div>`;
 });
 sidebar.appendChild(legendBox);
-
-// [UPDATE] 3. 渲染连线（包含编号生成）
-links.forEach((link, idx) => {
-    const s = nodes.find(n => n.id === link.from);
-    const t = nodes.find(n => n.id === link.to);
-    if (!s || !t) return;
-    
-    const lineId = idx + 1; // 生成编号
-    link.lineNum = lineId;  // 存入数据中
-
-    // 绘制线
-    const lEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    lEl.setAttribute("class", `link l-${link.from} l-${link.to}`);
-    lEl.setAttribute("x1", s.x); lEl.setAttribute("y1", s.y);
-    lEl.setAttribute("x2", t.x); lEl.setAttribute("y2", t.y);
-    mainGroup.appendChild(lEl);
-
-    // [NEW] 绘制编号文字
-    const midX = (s.x + t.x) / 2;
-    const midY = (s.y + t.y) / 2;
-    const tEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    tEl.setAttribute("x", midX); tEl.setAttribute("y", midY);
-    tEl.setAttribute("class", `link-num l-${link.from} l-${link.to}`);
-    // 给编号加一点白边，防止被线条遮挡
-    tEl.setAttribute("style", "font-size: 10px; fill: var(--accent); font-weight: bold; paint-order: stroke; stroke: #fff; stroke-width: 3px; pointer-events:none;");
-    tEl.textContent = lineId;
-    mainGroup.appendChild(tEl);
-});
-
-// [UPDATE] 4. 渲染节点（给圆圈上色）
-nodes.forEach(node => {
-    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    g.setAttribute("class", "node");
-    const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
-    
-    // 这里设置颜色
-    const groupColor = groups[node.group].color;
-    circ.setAttribute("stroke", groupColor); 
-    circ.setAttribute("stroke-width", "3"); // 让边框粗一点，颜色更明显
-    circ.setAttribute("fill", "white");     // 保持中间是白的，干净一些
-    
-    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    txt.setAttribute("x", node.x); txt.setAttribute("y", node.y + 25);
-    txt.setAttribute("text-anchor", "middle"); txt.setAttribute("class", "node-text");
-    txt.textContent = node.label;
-    
-    g.appendChild(circ); g.appendChild(txt);
-    g.onclick = (e) => { e.stopPropagation(); clickNode(node); };
-    mainGroup.appendChild(g);
-});
 
 /* --- 交互控制 --- */
 let scale = 1, tx = 0, ty = 0;
