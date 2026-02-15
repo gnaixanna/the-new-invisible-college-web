@@ -1,4 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guestbook - The New Invisible College</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper-bg: #faf8f2;
+            --paper-border: #d4cfc3;
+            --ink: #3a3a3a;
+            --ink-soft: #615c54;
+            --accent: #8c6b45; 
+        }
 
+        body {
+            margin: 0; padding: 40px 20px;
+            font-family: "Libre Baskerville", "Times New Roman", serif;
+            background: var(--paper-bg);
+            color: var(--ink);
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .back-home {
+            position: fixed; top: 20px; left: 20px;
+            text-decoration: none; color: var(--accent);
+            font-weight: bold; font-size: 0.9rem;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .back-home:hover { border-bottom: 1px solid var(--accent); }
+
+        header { text-align: center; margin-bottom: 40px; border-bottom: 1px double var(--paper-border); padding-bottom: 20px; width: 100%; max-width: 800px; }
+        
+        .main-content { width: 100%; max-width: 600px; }
+
+        /* 表单样式 */
+        .message-form {
+            background: #fff;
+            padding: 25px;
+            border: 1px solid var(--paper-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 50px;
+        }
+        .message-form h3 { margin-top: 0; color: var(--accent); font-style: italic; }
+        
+        input, textarea {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid var(--paper-border);
+            background: #fdfdfd;
+            font-family: inherit; box-sizing: border-box;
+        }
+        
+        button {
+            background: var(--accent); color: white;
+            border: none; padding: 12px 25px;
+            cursor: pointer; font-family: inherit; font-weight: bold;
+            transition: 0.3s; width: 100%;
+        }
+        button:hover { background: #6d5234; }
+
+        /* 留言列表样式 */
+        .messages-list { width: 100%; }
+        .message-item {
+            padding: 20px 0;
+            border-bottom: 1px dashed var(--paper-border);
+            animation: fadeIn 0.5s ease;
+        }
+        .msg-meta { font-size: 0.85rem; color: var(--accent); margin-bottom: 8px; font-weight: bold; }
+        .msg-time { font-weight: normal; color: var(--ink-soft); font-style: italic; margin-left: 10px; }
+        .msg-text { line-height: 1.6; font-size: 1rem; white-space: pre-wrap; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-home">← Return to Genealogy</a>
+
+    <header>
+        <div style="font-size: 2rem; font-weight: 600;">Correspondence & Notes</div>
+        <div style="font-size: 0.8rem; letter-spacing: 3px; color: var(--ink-soft); margin-top: 5px;">THE GUESTBOOK OF THE COLLEGE</div>
+    </header>
+
+    <div class="main-content">
+        <div class="message-form">
+            <h3>Leave a Note</h3>
+            <form id="msgForm">
+                <input type="text" id="userName" placeholder="Your Name (Scientist / Explorer)" required>
+                <textarea id="messageText" rows="4" placeholder="Share your thoughts on physics or this genealogy..." required></textarea>
+                <button type="submit" id="submitBtn">Seal and Post</button>
+            </form>
+        </div>
+
+        <div class="messages-list" id="messagesDisplay">
+            <p style="text-align: center; color: var(--ink-soft);">Loading records from the archives...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } 
+               from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+        // 你的配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHJhvfRwjY5vUC8RU1-OZDuQg-E484y0E",
+            authDomain: "the-new-invisible-college.firebaseapp.com",
+            projectId: "the-new-invisible-college",
+            storageBucket: "the-new-invisible-college.firebasestorage.app",
+            messagingSenderId: "666232085063",
+            appId: "1:666232085063:web:7327bd027e95524e44af62",
+            measurementId: "G-2XE0WKMHK0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const colRef = collection(db, "messages");
+
+        // 提交留言
+        const msgForm = document.getElementById('msgForm');
+        msgForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Posting...";
+
+            try {
+                await addDoc(colRef, {
+                    name: document.getElementById('userName').value,
+                    text: document.getElementById('messageText').value,
+                    timestamp: serverTimestamp()
+                });
+                msgForm.reset();
+            } catch (err) {
+                alert("Failed to post: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Seal and Post";
+            }
+        });
+
+        // 实时获取留言
+        const q = query(colRef, orderBy('timestamp', 'desc'));
+        onSnapshot(q, (snapshot) => {
+            const display = document.getElementById('messagesDisplay');
+            display.innerHTML = ""; // 清空加载提示
+            
+            snapshot.docs.forEach(doc => {
+                const data = doc.data();
+                const date = data.timestamp ? data.timestamp.toDate().toLocaleString() : "Just now";
+                
+                const html = `
+                    <div class="message-item">
+                        <div class="msg-meta">${data.name}<span class="msg-time">${date}</span></div>
+                        <div class="msg-text">${data.text}</div>
+                    </div>
+                `;
+                display.innerHTML += html;
+            });
+
+            if (snapshot.empty) {
+                display.innerHTML = '<p style="text-align: center; color: var(--ink-soft);">No records found yet. Be the first to write.</p>';
+            }
+        });
+    </script>
+</body>
 </html>
