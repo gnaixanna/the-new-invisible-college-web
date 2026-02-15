@@ -49,6 +49,48 @@
             border-radius: 4px; /* 加一点圆角 */
             box-shadow: 0 2px 4px rgba(0,0,0,0.03); /* 给内部小卡片加一点点投影 */
         }
+        /* 留言板按钮样式 */
+        .guestbook-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001; /* 确保在所有层级之上 */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--paper-bg);
+            color: var(--accent);
+            text-decoration: none;
+            font-family: "Libre Baskerville", serif;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .guestbook-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .guestbook-btn .icon {
+            font-size: 1.1rem;
+        }
+        
+        /* 移动端适配：如果屏幕太小，缩小按钮或调整位置 */
+        @media (max-width: 600px) {
+            .guestbook-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                top: 10px;
+                left: 10px;
+            }
+        }
 
         /* Diagram Area */
         .diagram-container {
