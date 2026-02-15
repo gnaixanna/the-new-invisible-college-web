@@ -421,7 +421,7 @@ function renderDiagram() {
     nodes.forEach(node => {
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("class", "node");
-        const circ = document.createElementNS("http://www.w3.org/200/svg", "circle");
+        const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
         const groupColor = groups[node.group].color;
         circ.setAttribute("stroke", groupColor);
@@ -438,7 +438,12 @@ function renderDiagram() {
 }
 
 // Run simulation and update positions
+function animateDiagram() {
+    renderDiagram();
+    requestAnimationFrame(animateDiagram);
+}
 simulation.on("tick", renderDiagram);
+animateDiagram();
 // 自动生成图例并挂载到侧边栏
 const sidebar = document.getElementById('sidebar');
 const legendBox = document.createElement('div');
