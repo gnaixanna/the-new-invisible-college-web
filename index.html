@@ -571,6 +571,7 @@ svg.onwheel = (e) => {
 };
 
 function clickNode(node) {
+    document.getElementById('sidebar').scrollTop = 0;
     document.getElementById('intro').style.display = 'none';
     const det = document.getElementById('details');
     det.style.display = 'block';
