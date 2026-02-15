@@ -421,7 +421,7 @@ function renderDiagram() {
     nodes.forEach(node => {
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("class", "node");
-        const circ = document.createElementNS("http://www.w3.org/200svg", "circle");
+        const circ = document.createElementNS("http://www.w3.org/200/svg", "circle");
         circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
         const groupColor = groups[node.group].color;
         circ.setAttribute("stroke", groupColor);
