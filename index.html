@@ -419,12 +419,12 @@ const links = [
     { from: "schrodinger", to: "heisenberg", note: "The debate between Schrödinger's wave mechanics and Heisenberg's matrix mechanics " },
     { from: "heisenberg", to: "dirac", note: "" },
     { from: "heisenberg", to: "fermi", note: "" },
-    { from: "meitner", to: "oppenheimer", note: "" },
-    { from: "meitner", to: "sakharov", note: "" },
+    //{ from: "meitner", to: "oppenheimer", note: "" },
+    //{ from: "meitner", to: "sakharov", note: "" },
     { from: "sakharov", to: "lee", note: "" },
     { from: "sakharov", to: "yang", note: "" },
     { from: "oppenheimer", to: "teller", note: "" },
-    { from: "dirac", to: "fermi", note: "" },
+    { from: "dirac", to: "fermi", note: "Fermi-Dirac Statistics." },//ellaborate. dirac used to refer to at as "fermi statistics"
     { from: "dirac", to: "fowler", note: "Fowler was Dirac's teacher in Cambridge, who introduced him to quantum theory in 1923. Furthermore, Fowler was also the first one to use Fermi-Dirac Statistics in White Dwarfs." },
     { from: "dirac", to: "feynman", note: "Feynman's 1949 paper on 'The Theory of Positrons' addressed the Dirac equation (and the Schrödinger equation), and introduced the Feynman propagator. Personally, Feynman admired Dirac very much." },
     { from: "fermi", to: "wu", note: "" },
@@ -435,8 +435,9 @@ const links = [
     { from: "chandrasekhar", to: "lee", note: "Lee was a student of Chandrasekhar in the University of Chicago." },
     { from: "chandrasekhar", to: "yang", note: "Yang was a student of Chandrasekhar in the University of Chicago." },
     { from: "yukawa", to: "feynman", note: "" },
-    { from: "wu", to: "lee", note: "" },
-    { from: "wu", to: "yang", note: "" },
+    { from: "wu", to: "lee", note: "Wu's experiment verified the hypothesis (that parity is not conserved) of Yang and Lee was correct." },
+    { from: "wu", to: "yang", note: "Wu's experiment verified the hypothesis (that parity is not conserved) of Lee and Yang was correct." },
+    { from: "yang", to: "lee", note: "Lee and Yang collaborated and proposed that parity is not conserved under weak interactions." },
         ];
 /* --- 初始化与布局 --- */
 const mainGroup = document.getElementById('main-group');
