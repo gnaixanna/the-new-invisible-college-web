@@ -94,6 +94,49 @@
             }
         }
 
+        .about{
+        position: absolute; /* 在 header 相对定位 */
+        top: 50%;
+        left: 60px;
+        transform: translateY(-50%); /* 垂直居中于 header */
+        z-index: 1001; 
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: #fff; /* 使用纯白，在米色背景上更跳脱 */
+        color: var(--accent);
+        text-decoration: none;
+        font-family: "Libre Baskerville", serif;
+        font-size: 0.85rem;
+        font-weight: bold;
+        border: 1px solid var(--paper-border); /* 线条细一点更精致 */
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .about:hover {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+        
+        .about.icon {
+            font-size: 1.1rem;
+        }
+        
+        /* 移动端适配：如果屏幕太小，缩小按钮或调整位置 */
+        @media (max-width: 600px) {
+            .about {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                top: 10px;
+                left: 10px;
+            }
+        }
+
         /* Diagram Area */
         .diagram-container {
             flex: 1; position: relative; cursor: grab;
@@ -196,10 +239,12 @@
     <a href="MessageBoard.html" class="guestbook-btn" title="Go to Guestbook">
         Guestbook
     </a>
+    <a href="about.html" class="about" title="about-page">
+        About This Website
+    </a>
     <div style="font-size: 1.8rem; font-weight: 600;">The New Invisible College</div>
     <div style="font-size: 0.8rem; letter-spacing: 2px; color: var(--ink-soft);">A GENEALOGY OF MODERN PHYSICS</div>
 </header>
-
 <div class="container">
     <aside class="sidebar" id="sidebar">
         <div id="intro">
