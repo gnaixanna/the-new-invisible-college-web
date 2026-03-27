@@ -17,7 +17,7 @@
             --accent: #8c6b45; 
         }
     
-        /* --- 基础布局 --- */
+       
         body {
             margin: 0; padding: 0;
             font-family: "Libre Baskerville", "Times New Roman", serif;
@@ -515,17 +515,17 @@ function clickNode(node) {
     document.getElementById('s-name').textContent = node.label;
     document.getElementById('s-bio').innerHTML = node.bio;
 
-    // 高亮连线
+    // bolding the lines (when selected)
     document.querySelectorAll('.link').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.l-${node.id}`).forEach(l => l.classList.add('active'));
-    // 1. 先清除所有线和数字的激活状态
+    // 1. Clear the active state of all lines and numbers
     document.querySelectorAll('.link, .link-num').forEach(el => el.classList.remove('active'));
     
-    // 2. 为当前科学家相关的线和数字添加激活状态
+    // 2. Add activation status to lines and numbers related to current scientists
     document.querySelectorAll(`.l-${node.id}`).forEach(el => el.classList.add('active'));
     const rels = links.filter(l => l.from === node.id || l.to === node.id);
     
-    // 1. 按组进行归类
+    
     const groupedRels = {};
     rels.forEach(r => {
         const otherId = r.from === node.id ? r.to : r.from;
@@ -537,13 +537,13 @@ function clickNode(node) {
         groupedRels[gKey].push({ link: r, target: otherNode });
     });
 
-    // 2. 构造 HTML
+    
     let html = '';
     for (const gKey in groupedRels) {
         const groupInfo = groups[gKey];
         const items = groupedRels[gKey];
         
-        // 创建一个该领域的“大包裹框”
+        // grouping, in the left hand side
         html += `
             <div style="background: ${groupInfo.color}15; border-radius: 8px; padding: 12px; margin-bottom: 20px; border: 1px solid ${groupInfo.color}33;">
                 <h4 style="margin: 0 0 10px 0; color: ${groupInfo.color}; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
@@ -551,7 +551,7 @@ function clickNode(node) {
                 </h4>
         `;
 
-        // 在框内渲染具体的关系
+        // Render the specific relationships within the frame
         html += items.map(item => `
             <div class="relation-box" style="background: white; margin-top: 8px; border-left: 3px solid ${groupInfo.color};">
                 <small style="color:var(--ink-soft);">[Line #${item.link.lineNum}]</small><br>
@@ -560,7 +560,7 @@ function clickNode(node) {
             </div>
         `).join('');
 
-        html += `</div>`; // 闭合大包裹框
+        html += `</div>`; 
     }
 
     document.getElementById('s-links').innerHTML = html || '<p>No specific records found.</p>';
