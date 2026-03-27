@@ -34,7 +34,7 @@
     
         .container { display: flex; height: calc(100vh - 100px); position: relative; }
     
-        /* --- 侧边栏 --- */
+        
         .sidebar {
             width: 350px; border-right: 1px solid var(--paper-border);
             background: #fdfbf6; padding: 20px;
@@ -43,7 +43,7 @@
         .sidebar h2 { font-size: 1.3rem; color: var(--accent); margin-top: 0; }
         .relation-box { padding: 10px; font-size: 0.85rem; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
     
-        /* --- 导航按钮 (合并 Guestbook & About) --- */
+        /* Guestbook & About */
         .guestbook-btn, .about {
             position: absolute; top: 50%; transform: translateY(-50%);
             z-index: 1001; display: flex; align-items: center; gap: 8px;
@@ -61,12 +61,12 @@
         }
         .guestbook-btn .icon, .about .icon { font-size: 1.1rem; }
     
-        /* --- 图表区域 --- */
+        
         .diagram-container { flex: 1; position: relative; cursor: grab; background: #fff; user-select: none; overflow: hidden; }
         .diagram-container:active { cursor: grabbing; }
         svg { width: 100%; height: 100%; }
     
-        /* --- 缩放控制 --- */
+        
         .zoom-controls { position: absolute; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
         .zoom-btn {
             width: 48px; height: 48px; border-radius: 10px; background: var(--accent);
@@ -76,7 +76,7 @@
         }
         .zoom-btn:hover { background: #6d5234; transform: translateY(-2px); }
     
-        /* --- 关系网元素 --- */
+        
         .link { stroke: var(--paper-border); stroke-opacity: 0.5; stroke-width: 1.5; fill: none; transition: 0.3s; }
         .link.active { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2.5; }
         .node circle { fill: white; stroke-width: 3; transition: 0.3s; }
@@ -90,17 +90,17 @@
         }
         .link-num.active { opacity: 1; }
     
-        /* --- 图例 --- */
+        
         .legend { margin-top: 30px; padding-top: 15px; border-top: 1px dashed var(--paper-border); }
         .legend h3 { font-size: 1rem; margin-bottom: 10px; }
         .legend-item { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 0.8rem; line-height: 1.2; }
         .color-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; margin-top: 3px; flex-shrink: 0; }
     
-        /* --- 移动端适配 --- */
+        
         @media (max-width: 600px) {
             .guestbook-btn, .about { padding: 8px 12px; font-size: 0.8rem; top: 10px; transform: none; }
             .guestbook-btn { left: 10px; }
-            .about { left: 100px; } /* 避免重叠 */
+            .about { left: 100px; } 
         }
     </style>
 </head>
@@ -142,7 +142,7 @@
 </div>
 
 <script>
-/* --- 数据配置 --- */
+
 const groups = {
     "stat":      { x: 500, y: 100, label: "Statistical Physics", color: "#e63946", desc: "Foundational laws of thermodynamics" },
     "atomic":    { x: 750, y: 150, label: "Atomic Model", color: "#f4a261", desc: "Structure of atoms and electrons" },
@@ -153,9 +153,9 @@ const groups = {
     "astro":     { x: 800, y: 650, label: "Astrophysics", color: "#457b9d", desc: "Celestial bodies and cosmic limits" },
     "field":     { x: 550, y: 750, label: "Quantum Field Theory", color: "#6d597a", desc: "High energy and particle physics" }
 };
-/* --- 长宽比压缩逻辑 --- */
-const compressY = 0.75; // 压缩率：1.0 是原状，0.75 会减少 25% 的高度
-const spreadX = 1.1;    // 补偿系数：稍微拉开横向距离，防止节点重叠
+/* Original diagram is too tall */
+const compressY = 0.75; 
+const spreadX = 1.1;    
 
 Object.keys(groups).forEach(key => {
     groups[key].y = groups[key].y * compressY;
@@ -164,7 +164,7 @@ Object.keys(groups).forEach(key => {
 
 const nodes = [
 
-    // Statistical Physics (起源)
+    // Statistical Physics
     
     { id: "boltzmann", label: "L. Boltzmann", group: "stat", bio: "Boltzmann's greatest achievements were the development of statistical mechanics and the statistical explanation of the second law of thermodynamics." },
     
@@ -202,7 +202,7 @@ const nodes = [
     
     
     
-    // Quantum Mechanics (核心层)
+    // Quantum Mechanics 
     
     { id: "born", label: "M. Born", group: "qm", bio: "Proposed the statistical interpretation of the wave function." },
     
@@ -242,7 +242,7 @@ const nodes = [
     
     
     
-    // High Energy & Particle (新生代)
+    // High Energy & Particle 
     
     { id: "yukawa", label: "H. Yukawa", group: "field", bio: "Predicted the existence of mesons, developed the model of the strong force between hadrons" },
 
@@ -354,22 +354,21 @@ const links = [
     { from: "wu", to: "yang", note: "Wu's experiment verified the hypothesis (that parity is not conserved) of Lee and Yang was correct." },
     { from: "yang", to: "lee", note: "Lee and Yang collaborated and proposed that parity is not conserved under weak interactions." },
         ];
-/* --- 初始化与布局 --- */
+/* spacing */
 const mainGroup = document.getElementById('main-group');
 const svg = document.getElementById('scene');
 
-// 1. 预计算每个节点的连接数 (Degree)
+// 1. calculate the number of connections for each node
 nodes.forEach(n => {
     n.degree = links.filter(l => l.from === n.id || l.to === n.id).length;
 });
 
-// 2. 初始化坐标逻辑
-// 2. 初始化坐标逻辑
+// 2. Initialize coordinates
 nodes.forEach((node, i) => {
     const gCfg = groups[node.group];
     const centerX = 600; 
     
-    // 【修改点】改为每行 4 个，并收紧间距，从而压扁布局
+    // 4 per row to flatten the layout
     const col = i % 4;
     const row = Math.floor(i / 4);
     const nodeSpacingX = 180; 
@@ -377,14 +376,14 @@ nodes.forEach((node, i) => {
 
     const pullingForce = (node.degree > 5) ? (centerX - gCfg.x) * 0.2 : 0;
     
-    // 微小偏移 (Jitter)
+    // Jitter
     const jitterX = (i % 2 === 0 ? 1 : -1) * 10;
     const jitterY = (i % 3 === 0 ? 1 : -1) * 5;
 
     node.x = gCfg.x + col * nodeSpacingX + pullingForce + jitterX;
     node.y = gCfg.y + row * nodeSpacingY + jitterY;
 });
-// 自动生成图例并挂载到侧边栏
+//legend
 const sidebar = document.getElementById('sidebar');
 const legendBox = document.createElement('div');
 legendBox.className = 'legend';
@@ -403,46 +402,45 @@ Object.keys(groups).forEach(key => {
 });
 sidebar.appendChild(legendBox);
 
-// [UPDATE] 3. 渲染连线（包含编号生成）
+// 3. number the lines
 links.forEach((link, idx) => {
     const s = nodes.find(n => n.id === link.from);
     const t = nodes.find(n => n.id === link.to);
     if (!s || !t) return;
     
-    const lineId = idx + 1; // 生成编号
-    link.lineNum = lineId;  // 存入数据中
+    const lineId = idx + 1; 
+    link.lineNum = lineId; 
 
-    // 绘制线
+    // draw the lines
     const lEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
     lEl.setAttribute("class", `link l-${link.from} l-${link.to}`);
     lEl.setAttribute("x1", s.x); lEl.setAttribute("y1", s.y);
     lEl.setAttribute("x2", t.x); lEl.setAttribute("y2", t.y);
     mainGroup.appendChild(lEl);
 
-    // [NEW] 绘制编号文字
+    // draw the number of the lines
     const midX = (s.x + t.x) / 2;
     const midY = (s.y + t.y) / 2;
     const tEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
     tEl.setAttribute("x", midX); tEl.setAttribute("y", midY);
     tEl.setAttribute("class", `link-num l-${link.from} l-${link.to}`);
-    // 给编号加一点白边，防止被线条遮挡
     tEl.setAttribute("style", "font-size: 10px; fill: var(--accent); font-weight: bold; paint-order: stroke; stroke: #fff; stroke-width: 3px; pointer-events:none;");
     tEl.textContent = lineId;
     mainGroup.appendChild(tEl);
 });
 
-// [UPDATE] 4. 渲染节点（给圆圈上色）
+// 4. colour the nodes
 nodes.forEach(node => {
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("class", "node");
     const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circ.setAttribute("cx", node.x); circ.setAttribute("cy", node.y); circ.setAttribute("r", 10);
     
-    // 这里设置颜色
+    
     const groupColor = groups[node.group].color;
     circ.setAttribute("stroke", groupColor); 
-    circ.setAttribute("stroke-width", "3"); // 让边框粗一点，颜色更明显
-    circ.setAttribute("fill", "white");     // 保持中间是白的，干净一些
+    circ.setAttribute("stroke-width", "3"); 
+    circ.setAttribute("fill", "white");     
     
     const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
     txt.setAttribute("x", node.x); txt.setAttribute("y", node.y + 25);
@@ -454,7 +452,7 @@ nodes.forEach(node => {
     mainGroup.appendChild(g);
 });
 
-/* --- 交互控制 --- */
+/* user interface */
 let scale = 1, tx = 0, ty = 0;
 let isDragging = false, startX, startY;
 
@@ -465,7 +463,7 @@ const updateTransform = () => {
 function manualZoom(factor) {
     const oldScale = scale;
     scale *= factor;
-    scale = Math.min(Math.max(scale, 0.2), 4); // 限制范围
+    scale = Math.min(Math.max(scale, 0.2), 4); 
 
     const rect = svg.getBoundingClientRect();
     const cx = rect.width / 2;
@@ -492,11 +490,11 @@ window.onmousemove = (e) => {
 
 window.onmouseup = () => isDragging = false;
 
-// 降低滚轮灵敏度
+// Reduce sensitivity
 svg.onwheel = (e) => {
     e.preventDefault();
     const oldScale = scale;
-    const delta = e.deltaY > 0 ? 0.96 : 1.04; // 极其微小的缩放
+    const delta = e.deltaY > 0 ? 0.96 : 1.04; 
     scale *= delta;
     scale = Math.min(Math.max(scale, 0.2), 4);
 
