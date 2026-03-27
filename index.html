@@ -8,7 +8,7 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script defer src="/_vercel/insights/script.js"></script>
 
-    <style>
+   <style>
         :root {
             --paper-bg: #faf8f2;
             --paper-border: #d4cfc3;
@@ -16,221 +16,91 @@
             --ink-soft: #615c54;
             --accent: #8c6b45; 
         }
-
+    
+        /* --- 基础布局 --- */
         body {
             margin: 0; padding: 0;
             font-family: "Libre Baskerville", "Times New Roman", serif;
             background: var(--paper-bg); color: var(--ink);
             overflow: hidden; 
         }
-
+    
         header {
             text-align: center; padding: 1.5rem 0;
             border-bottom: 1px solid var(--paper-border);
             background: var(--paper-bg);
             z-index: 100; position: relative;
         }
-
-        .container {
-            display: flex; height: calc(100vh - 100px);
-            position: relative;
-        }
-
-        /* Sidebar */
+    
+        .container { display: flex; height: calc(100vh - 100px); position: relative; }
+    
+        /* --- 侧边栏 --- */
         .sidebar {
             width: 350px; border-right: 1px solid var(--paper-border);
             background: #fdfbf6; padding: 20px;
             overflow-y: auto; z-index: 10;
         }
-
         .sidebar h2 { font-size: 1.3rem; color: var(--accent); margin-top: 0; }
-        .relation-box { 
-            padding: 10px; 
-            font-size: 0.85rem; 
-            border-radius: 4px; /* 加一点圆角 */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03); /* 给内部小卡片加一点点投影 */
-        }
-        /* 留言板按钮样式 */
-        .guestbook-btn {
-        position: absolute; /* 在 header 相对定位 */
-        top: 50%;
-        left: 20px;
-        transform: translateY(-50%); /* 垂直居中于 header */
-        z-index: 1001; 
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 14px;
-        background: #fff; /* 使用纯白，在米色背景上更跳脱 */
-        color: var(--accent);
-        text-decoration: none;
-        font-family: "Libre Baskerville", serif;
-        font-size: 0.85rem;
-        font-weight: bold;
-        border: 1px solid var(--paper-border); /* 线条细一点更精致 */
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-    }
+        .relation-box { padding: 10px; font-size: 0.85rem; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
     
-    .guestbook-btn:hover {
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-        
-        .guestbook-btn .icon {
-            font-size: 1.1rem;
+        /* --- 导航按钮 (合并 Guestbook & About) --- */
+        .guestbook-btn, .about {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            z-index: 1001; display: flex; align-items: center; gap: 8px;
+            padding: 8px 14px; background: #fff; color: var(--accent);
+            text-decoration: none; font-size: 0.85rem; font-weight: bold;
+            border: 1px solid var(--paper-border); border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); transition: all 0.3s ease;
         }
-        
-        /* 移动端适配：如果屏幕太小，缩小按钮或调整位置 */
-        @media (max-width: 600px) {
-            .guestbook-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-                top: 10px;
-                left: 10px;
-            }
-        }
-
-        .about{
-        position: absolute; /* 在 header 相对定位 */
-        top: 50%;
-        left: 120px;
-        transform: translateY(-50%); /* 垂直居中于 header */
-        z-index: 1001; 
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 14px;
-        background: #fff; /* 使用纯白，在米色背景上更跳脱 */
-        color: var(--accent);
-        text-decoration: none;
-        font-family: "Libre Baskerville", serif;
-        font-size: 0.85rem;
-        font-weight: bold;
-        border: 1px solid var(--paper-border); /* 线条细一点更精致 */
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-    }
+        .guestbook-btn { left: 20px; }
+        .about { left: 120px; }
     
-    .about:hover {
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-        
-        .about.icon {
-            font-size: 1.1rem;
+        .guestbook-btn:hover, .about:hover {
+            background: var(--accent); color: white; border-color: var(--accent);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
-        
-        /* 移动端适配：如果屏幕太小，缩小按钮或调整位置 */
-        @media (max-width: 600px) {
-            .about {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-                top: 10px;
-                left: 10px;
-            }
-        }
-
-        /* Diagram Area */
-        .diagram-container {
-            flex: 1; position: relative; cursor: grab;
-            background-color: #ffffff;
-            user-select: none;
-            overflow: hidden;
-        }
-
+        .guestbook-btn .icon, .about .icon { font-size: 1.1rem; }
+    
+        /* --- 图表区域 --- */
+        .diagram-container { flex: 1; position: relative; cursor: grab; background: #fff; user-select: none; overflow: hidden; }
         .diagram-container:active { cursor: grabbing; }
         svg { width: 100%; height: 100%; }
-
-        /* Zoom Controls */
-        .zoom-controls {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 999;
-        }
-        
+    
+        /* --- 缩放控制 --- */
+        .zoom-controls { position: absolute; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
         .zoom-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            font-size: 22px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+            width: 48px; height: 48px; border-radius: 10px; background: var(--accent);
+            color: white; border: none; font-size: 22px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
-        
-        .zoom-btn:hover {
-            background: #6d5234;
-            transform: translateY(-2px);
-        }
-
-        /* Elements */
-        .link { stroke: #d4cfc3; stroke-opacity: 0.5; stroke-width: 1.5; fill: none; transition: 0.3s; }
+        .zoom-btn:hover { background: #6d5234; transform: translateY(-2px); }
+    
+        /* --- 关系网元素 --- */
+        .link { stroke: var(--paper-border); stroke-opacity: 0.5; stroke-width: 1.5; fill: none; transition: 0.3s; }
         .link.active { stroke: var(--accent); stroke-opacity: 1; stroke-width: 2.5; }
         .node circle { fill: white; stroke-width: 3; transition: 0.3s; }
         .node:hover circle { fill: #fff5e6; r: 15; }
         .node-text { font-size: 11px; fill: var(--ink); pointer-events: none; font-weight: bold; }
-        /* 找到或添加这个类 */
-        .link-num { 
-            font-size: 10px; 
-            fill: var(--accent); 
-            font-weight: bold; 
-            paint-order: stroke; 
-            stroke: #fff; 
-            stroke-width: 3px; 
-            pointer-events: none; 
-            opacity: 0; /* 默认隐藏 */
-            transition: opacity 0.3s; /* 添加淡入淡出效果 */
-        }
         
-        /* 当父级线激活时，文字显示 */
-        .link-num.active { 
-            opacity: 1; 
+        .link-num { 
+            font-size: 10px; fill: var(--accent); font-weight: bold; 
+            paint-order: stroke; stroke: #fff; stroke-width: 3px; 
+            pointer-events: none; opacity: 0; transition: 0.3s; 
         }
-        /* 图例容器 */
-        .legend { 
-            margin-top: 30px; 
-            padding-top: 15px; 
-            border-top: 1px dashed var(--paper-border); 
-        }
-        .legend h3 { 
-            font-size: 1rem; 
-            color: var(--ink); 
-            margin-bottom: 10px; 
-        }
-        /* 单个图例项 */
-        .legend-item { 
-            display: flex; 
-            align-items: flex-start; 
-            margin-bottom: 8px; 
-            font-size: 0.8rem; 
-            line-height: 1.2;
-        }
-        /* 颜色小圆点 */
-        .color-dot { 
-            width: 10px; 
-            height: 10px; 
-            border-radius: 50%; 
-            margin-right: 10px; 
-            margin-top: 3px;
-            flex-shrink: 0;
+        .link-num.active { opacity: 1; }
+    
+        /* --- 图例 --- */
+        .legend { margin-top: 30px; padding-top: 15px; border-top: 1px dashed var(--paper-border); }
+        .legend h3 { font-size: 1rem; margin-bottom: 10px; }
+        .legend-item { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 0.8rem; line-height: 1.2; }
+        .color-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; margin-top: 3px; flex-shrink: 0; }
+    
+        /* --- 移动端适配 --- */
+        @media (max-width: 600px) {
+            .guestbook-btn, .about { padding: 8px 12px; font-size: 0.8rem; top: 10px; transform: none; }
+            .guestbook-btn { left: 10px; }
+            .about { left: 100px; } /* 避免重叠 */
         }
     </style>
 </head>
@@ -502,7 +372,7 @@ nodes.forEach((node, i) => {
     // 【修改点】改为每行 4 个，并收紧间距，从而压扁布局
     const col = i % 4;
     const row = Math.floor(i / 4);
-    const nodeSpacingX = 110; 
+    const nodeSpacingX = 180; 
     const nodeSpacingY = 85; 
 
     const pullingForce = (node.degree > 5) ? (centerX - gCfg.x) * 0.2 : 0;
