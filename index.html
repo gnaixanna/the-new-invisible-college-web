@@ -511,7 +511,6 @@ nodes.forEach(node => {
 
 /* user interface */
 let scale = 1, tx = -200, ty = 0;
-updateTransform();
 let isDragging = false, startX, startY;
 
 const updateTransform = () => {
@@ -627,6 +626,7 @@ function clickNode(node) {
         MathJax.typeset();
     }
 }
+    updateTransform();
 </script>
 </body>
 </html>
